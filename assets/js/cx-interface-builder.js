@@ -198,6 +198,8 @@
 				this.checkbox.init();
 				this.radio.init();
 				this.slider.init();
+				this.select.init();
+				this.media.init();
 			},
 
 			// CX-Switcher
@@ -228,7 +230,6 @@
 				itemClass: '.cx-checkbox-label, .cx-checkbox-item',
 
 				init: function() {
-					console.log(this);
 					$( 'body' ).on( 'click.cxCheckbox', this.itemClass, this.switchState.bind( this ) );
 				},
 
@@ -266,7 +267,169 @@
 
 					$( targetClass, $sliderWrapper ).val( $this.val() );
 				}
-			}//End CX-Slider
+			},//End CX-Slider
+
+			// CX-Select
+			select: {
+				init: function() {
+					$( document )
+						.on( 'ready.cxSelect', this.selectRender.bind( this ) )
+						.on( 'cx-control-init', this.selectRender.bind( this ) );
+				},
+
+				selectRender: function() {
+					var $target = ( event._target ) ? event._target : $( 'body' );
+				}
+			},//End CX-Select
+
+			// CX-Media
+			media: {
+				init: function() {
+					$( document )
+						.on( 'ready.cxMedia', this.mediaRender.bind( this ) )
+						.on( 'cx-control-init', this.mediaRender.bind( this ) );
+				},
+
+				mediaRender: function() {
+					var target   = ( event._target ) ? event._target : $( 'body' ),
+						$buttons = $( '.cx-upload-button', target );
+
+					$buttons.each( function() {
+						var button = $( this ),
+							buttonParent = button.closest('.cx-ui-media-wrap'),
+							settings = {
+								input: $( '.cx-upload-input', buttonParent ),
+								img_holder: $( '.cx-upload-preview', buttonParent ),
+								title_text: button.data('title'),
+								multiple: button.data('multi-upload'),
+								library_type: button.data('library-type'),
+							},
+							cx_uploader = wp.media.frames.file_frame = wp.media({
+								title: settings.title_text,
+								button: { text: settings.title_text },
+								multiple: settings.multiple,
+								library : { type : settings.library_type }
+							});
+
+						if ( ! buttonParent.has('input[name*="__i__"]')[ 0 ] ) {
+							button.off( 'click.cx-media' ).on( 'click.cx-media', function() {
+								cx_uploader.open();
+								return !1;
+							} ); // end click
+
+							cx_uploader.on('select', function() {
+									var attachment     = cx_uploader.state().get( 'selection' ).toJSON(),
+										count          = 0,
+										input_value    = '',
+										new_img_object = $( '.cx-all-images-wrap', settings.img_holder ),
+										new_img        = '',
+										delimiter      = '';
+
+									if ( settings.multiple ) {
+										input_value = settings.input.val();
+										delimiter   = ',';
+										new_img     = new_img_object.html();
+									}
+
+									while( attachment[ count ] ) {
+										var img_data    = attachment[ count ],
+											return_data = img_data.id,
+											mimeType    = img_data.mime,
+											img_src     = '',
+											thumb       = '';
+
+											switch (mimeType) {
+												case 'image/jpeg':
+												case 'image/png':
+												case 'image/gif':
+														if ( img_data.sizes !== undefined ) {
+															img_src = img_data.sizes.thumbnail ? img_data.sizes.thumbnail.url : img_data.sizes.full.url;
+														}
+														thumb = '<img  src="' + img_src + '" alt="" data-img-attr="' + return_data + '">';
+													break;
+												case 'image/x-icon':
+														thumb = '<span class="dashicons dashicons-format-image"></span>';
+													break;
+												case 'video/mpeg':
+												case 'video/mp4':
+												case 'video/quicktime':
+												case 'video/webm':
+												case 'video/ogg':
+														thumb = '<span class="dashicons dashicons-format-video"></span>';
+													break;
+												case 'audio/mpeg':
+												case 'audio/wav':
+												case 'audio/ogg':
+														thumb = '<span class="dashicons dashicons-format-audio"></span>';
+													break;
+											}
+
+											new_img += '<div class="cx-image-wrap">'+
+														'<div class="inner">'+
+															'<div class="preview-holder"  data-id-attr="' + return_data +'"><div class="centered">' + thumb + '</div></div>'+
+															'<a class="cx-remove-image" href="#"><i class="dashicons dashicons-no"></i></a>'+
+															'<span class="title">' + img_data.title + '</span>'+
+														'</div>'+
+													'</div>';
+
+										input_value += delimiter + return_data;
+										count++;
+									}
+
+									settings.input.val( input_value.replace( /(^,)/, '' ) ).trigger( 'change' );
+									new_img_object.html( new_img );
+								} );
+
+							var removeMediaPreview = function( item ) {
+								var buttonParent = item.closest( '.cx-ui-media-wrap' ),
+									input         = $( '.cx-upload-input', buttonParent ),
+									img_holder    = item.parent().parent( '.cx-image-wrap' ),
+									img_attr      = $( '.preview-holder', img_holder ).data( 'id-attr' ),
+									input_value   = input.attr( 'value' ),
+									pattern       = new RegExp( img_attr + '(,*)', 'i' );
+
+									input_value = input_value.replace( pattern, '' );
+									input_value = input_value.replace( /(,$)/, '' );
+									input.attr( { 'value': input_value } ).trigger( 'change' );
+									img_holder.remove();
+							};
+
+							// This function remove upload image
+							buttonParent.on( 'click', '.cx-remove-image', function () {
+								removeMediaPreview( $( this ) );
+								return !1;
+							});
+						}
+					} ); // end each
+
+					// Image ordering
+					$('.cx-all-images-wrap', target).sortable( {
+						items: 'div.cx-image-wrap',
+						cursor: 'move',
+						scrollSensitivity: 40,
+						forcePlaceholderSize: true,
+						forceHelperSize: false,
+						helper: 'clone',
+						opacity: 0.65,
+						placeholder: 'cx-media-thumb-sortable-placeholder',
+						start:function(){},
+						stop:function(){},
+						update: function() {
+							var attachment_ids = '';
+
+							$('.cx-image-wrap', this).each(
+								function() {
+									var attachment_id = $('.preview-holder', this).data( 'id-attr' );
+										attachment_ids = attachment_ids + attachment_id + ',';
+								}
+							);
+
+							attachment_ids = attachment_ids.substr(0, attachment_ids.lastIndexOf(',') );
+							$(this).parent().siblings('.cx-element-wrap').find('input.cx-upload-input').val( attachment_ids ).trigger( 'change' );
+						}
+					} );
+				}
+			}//End CX-Media
 
 		}
 	};
