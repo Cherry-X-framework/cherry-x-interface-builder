@@ -22,14 +22,13 @@ if ( ! class_exists( 'CX_Control_Switcher' ) ) {
 		 * @var array
 		 */
 		public $defaults_settings = array(
-			'id'     => 'cherry-ui-swither-id',
-			'name'   => 'cherry-ui-swither-name',
-			'value'  => 'true',
+			'id'     => 'cx-ui-swither-id',
+			'name'   => 'cx-ui-swither-name',
+			'value'  => true,
 			'toggle' => array(
 				'true_toggle'  => 'On',
 				'false_toggle' => 'Off',
 			),
-			'style'  => 'normal',
 			'label'  => '',
 			'class'  => '',
 		);
@@ -48,21 +47,19 @@ if ( ! class_exists( 'CX_Control_Switcher' ) ) {
 				)
 			);
 
-			$html .= '<div class="cherry-ui-container ' . esc_attr( $class ) . '">';
+			$html .= '<div class="cx-ui-container ' . esc_attr( $class ) . '">';
 				if ( '' !== $this->settings['label'] ) {
-					$html .= '<label class="cherry-label" for="' . esc_attr( $this->settings['id'] ) . '">' . esc_html( $this->settings['label'] ) . '</label> ';
+					$html .= '<label class="cx-label" for="' . esc_attr( $this->settings['id'] ) . '">' . esc_html( $this->settings['label'] ) . '</label> ';
 				}
 
 				$value = filter_var( $this->settings['value'], FILTER_VALIDATE_BOOLEAN );
 
-				$html .= '<div class="cherry-switcher-wrap size-' . esc_attr( $this->settings['style'] ) . '">';
-					$html .= '<input type="radio" id="' . esc_attr( $this->settings['id'] ) . '-true" class="cherry-input-switcher cherry-input-switcher-true" name="' . esc_attr( $this->settings['name'] ) . '" ' . checked( true, $value, false ) . ' value="true">';
-					$html .= '<input type="radio" id="' . esc_attr( $this->settings['id'] ) . '-false" class="cherry-input-switcher cherry-input-switcher-false" name="' . esc_attr( $this->settings['name'] ) . '" ' . checked( false, $value, false ) . ' value="false">';
-					//$html .= '<span class="cherry-lable-content">';
+				$html .= '<div class="cx-switcher-wrap">';
+					$html .= '<input type="radio" id="' . esc_attr( $this->settings['id'] ) . '-true" class="cx-input-switcher cx-input-switcher-true" name="' . esc_attr( $this->settings['name'] ) . '" ' . checked( true, $value, false ) . ' value="true">';
+					$html .= '<input type="radio" id="' . esc_attr( $this->settings['id'] ) . '-false" class="cx-input-switcher cx-input-switcher-false" name="' . esc_attr( $this->settings['name'] ) . '" ' . checked( false, $value, false ) . ' value="false">';
 					$html .= '<label class="sw-enable"><span>' . esc_html( $this->settings['toggle']['true_toggle'] ) . '</span></label>';
 					$html .= '<label class="sw-disable"><span>' . esc_html( $this->settings['toggle']['false_toggle'] ) . '</span></label>';
 					$html .= '<span class="state-marker"></span>';
-				//	$html .= '</span>';
 				$html .= '</div>';
 			$html .= '</div>';
 

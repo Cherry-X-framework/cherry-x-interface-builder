@@ -8,11 +8,15 @@
 	var cxInterfaceBuilder = {
 
 		init: function() {
+			// Component Init
 			this.component.init();
+			$( document ).on( 'cxFramework:interfaceBuilder:component', this.component.init.bind( this.component ) );
 
-			$( document )
-				.on( 'cxInterfaceBuilder', this.component.init.bind( this.component ) );
+			// Control Init
+			this.control.init();
+			$( document ).on( 'cxFramework:interfaceBuilder:control', this.control.init.bind( this.control ) );
 		},
+
 		component: {
 			tabClass:           '.cx-tab',
 			accordionClass:     '.cx-accordion',
@@ -186,6 +190,84 @@
 					return false;
 				}
 			}
+		},
+
+		control: {
+			init: function () {
+				this.switcher.init();
+				this.checkbox.init();
+				this.radio.init();
+				this.slider.init();
+			},
+
+			// CX-Switcher
+			switcher: {
+				switcherClass: '.cx-switcher-wrap',
+				trueClass: '.cx-input-switcher-true',
+				falseClass: '.cx-input-switcher-false',
+
+				init: function() {
+					$( 'body' ).on( 'click.cxSwitcher', this.switcherClass, this.switchState.bind( this ) );
+				},
+
+				switchState: function( event ) {
+					var $this       = $( event.currentTarget ),
+						$inputTrue  = $( this.trueClass, $this ),
+						$inputFalse = $( this.falseClass, $this ),
+						flag        = $inputTrue[0].checked;
+
+					$inputTrue.attr( 'checked', ( flag ) ? false : true );
+					$inputFalse.attr( 'checked', ( ! flag ) ? false : true );
+				}
+
+			},//End CX-Switcher
+
+			// CX-Checkbox
+			checkbox: {
+				inputClass: '.cx-checkbox-input[type="hidden"]:not([name*="__i__"])',
+				itemClass: '.cx-checkbox-label, .cx-checkbox-item',
+
+				init: function() {
+					console.log(this);
+					$( 'body' ).on( 'click.cxCheckbox', this.itemClass, this.switchState.bind( this ) );
+				},
+
+				switchState: function( event ) {
+					var $_input = $( event.currentTarget ).siblings( this.inputClass ),
+						flag    = $_input[0].checked;
+
+					$_input.val( ( flag ) ? 'false' : 'true' ).attr( 'checked', ( flag ) ? false : true );
+				}
+			},//End CX-Checkbox
+
+			// CX-Radio
+			radio: {
+				inputClass: '.cx-radio-input:not([name*="__i__"])',
+
+				init: function() {
+					$( 'body' ).on( 'click.cxRadio', this.inputClass, this.switchState.bind( this ) );
+				},
+
+				switchState: function( event ) {
+					var $this = $( event.currentTarget );
+				}
+			},//End CX-Radio
+
+			// CX-Slider
+			slider: {
+				init: function() {
+					$( 'body' ).on( 'input.cxSlider change.cxSlider', '.cx-slider-unit, .cx-ui-stepper-input', this.changeHandler.bind( this ) );
+				},
+
+				changeHandler: function( event ) {
+					var $this          = $( event.currentTarget ),
+						$sliderWrapper = $this.closest( '.cx-slider-wrap' ),
+						targetClass    = ( ! $this.hasClass( 'cx-slider-unit' ) ) ? '.cx-slider-unit' : '.cx-ui-stepper-input';
+
+					$( targetClass, $sliderWrapper ).val( $this.val() );
+				}
+			}//End CX-Slider
+
 		}
 	};
 
