@@ -16,14 +16,33 @@ if ( ! class_exists( 'CX_Controls_Base' ) ) {
 	abstract class CX_Controls_Base {
 
 		/**
+		 * Base URL
+		 *
+		 * @var null
+		 */
+		public $base_url = null;
+
+		/**
+		 * Settings list
+		 *
+		 * @since 1.0.0
+		 * @var array
+		 */
+		protected $settings = array();
+
+		/**
 		 * Constructor method for the CX_Controls_Base class.
 		 *
 		 * @since 1.0.0
 		 */
 		public function __construct( $args = array() ) {
+
 			$this->defaults_settings['id'] = 'cx-control-' . uniqid();
 			$this->settings = wp_parse_args( $args, $this->defaults_settings );
 			$this->init();
+
+			add_action( 'wp_enqueue_scripts', array( $this, 'register_depends' ) );
+			add_action( 'admin_enqueue_scripts', array( $this, 'register_depends' ) );
 		}
 
 		/**
@@ -39,12 +58,38 @@ if ( ! class_exists( 'CX_Controls_Base' ) ) {
 		public function init() {}
 
 		/**
-		 * Settings list
+		 * Retrun scripts dependencies list for current control.
 		 *
-		 * @since 1.0.0
-		 * @var array
+		 * @return array
 		 */
-		protected $settings = array();
+		public function get_script_depends() {
+			return array();
+		}
+
+		/**
+		 * Register required dependencies
+		 *
+		 * @return void
+		 */
+		public function register_depends() {}
+
+		/**
+		 * Retrun styles dependencies list for current control.
+		 *
+		 * @return array
+		 */
+		public function get_style_depends() {
+			return array();
+		}
+
+		/**
+		 * Set up base URL for next usage
+		 *
+		 * @param string $url array
+		 */
+		public function set_base_url( $url = '' ) {
+			$this->base_url = $url;
+		}
 
 		/**
 		 * Get control value

@@ -73,6 +73,10 @@ if ( ! class_exists( 'CX_Control_Select' ) ) {
 				)
 			);
 
+			if ( isset( $this->settings['options_callback'] ) ) {
+				$this->settings['options'] = call_user_func( $this->settings['options_callback'] );
+			}
+
 			$html .= '<div class="cx-ui-container ' . esc_attr( $class ) . '">';
 				$html .= '<div class="cx-ui-select-wrapper">';
 					( $this->settings['filter'] ) ? $filter_state = 'data-filter="true"' : $filter_state = 'data-filter="false"' ;

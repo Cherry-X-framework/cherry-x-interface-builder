@@ -29,11 +29,20 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 		protected $path;
 
 		/**
+		 * Module directory URL.
+		 *
+		 * @since 1.5.0
+		 * @access protected
+		 * @var srting.
+		 */
+		protected $url;
+
+		/**
 		 * Module version
 		 *
 		 * @var string
 		 */
-		protected $version = '1.0.1';
+		protected $version = '1.0.0';
 
 		/**
 		 * Module settings.
@@ -101,6 +110,15 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 		private $structure = array();
 
 		/**
+		 * Dependencies array
+		 * @var array
+		 */
+		private $deps = array(
+			'css' => array(),
+			'js'  => array( 'jquery' ),
+		);
+
+		/**
 		 * Cherry_Interface_Builder constructor.
 		 *
 		 * @since  1.0.0
@@ -110,6 +128,8 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 		public function __construct( array $args = array() ) {
 
 			$this->path = $args['path'];
+			$this->url  = $args['url'];
+
 			$this->args = array_merge(
 				$this->args,
 				$args
@@ -119,7 +139,7 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 
 			require trailingslashit( $this->path ) . 'inc/class-cx-controls-manager.php';
 
-			$this->controls = new CX_Controls_Manager( $this->path );
+			$this->controls = new CX_Controls_Manager( $this->path, $this->url );
 
 		}
 
@@ -212,6 +232,14 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 						$args['type'] = $type;
 					}
 
+					if ( 'control' ===  $type ) {
+						$instance         = $this->controls->register_control( $args['type'], $args );
+						$args['instance'] = $instance;
+
+						$this->add_dependencies( $instance );
+
+					}
+
 					$this->structure[ $args['id'] ] = $args;
 
 			} else {
@@ -221,9 +249,32 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 						$value['type'] = $type;
 					}
 
+					if ( 'control' ===  $type ) {
+						$instance          = $this->controls->register_control( $value['type'], $value );
+						$value['instance'] = $instance;
+
+						$this->add_dependencies( $instance );
+					}
+
 					$this->structure[ $key ] = $value;
 				}
 			}
+		}
+
+		/**
+		 * Add control dependencies to global builder deps
+		 *
+		 * @param [type] $control [description]
+		 */
+		protected function add_dependencies( $control ) {
+
+			if ( ! $control instanceof CX_Controls_Base ) {
+				return;
+			}
+
+			$this->deps['js']  = array_merge( $this->deps['js'], $control->get_script_depends() );
+			$this->deps['css'] = array_merge( $this->deps['css'], $control->get_style_depends() );
+
 		}
 
 		/**
@@ -410,13 +461,9 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 
 						$ui_args['class'] = isset( $ui_args['child_class'] ) ? $ui_args['child_class'] : '' ;
 
-						if ( isset( $ui_args['options_callback'] ) ) {
-							$ui_args['options'] = call_user_func( $ui_args['options_callback'] );
-						}
-
 						unset( $ui_args['master'] );
 
-						$control = $this->controls->register_control( $ui_args['type'], $ui_args );
+						$control = isset( $ui_args['instance'] ) ? $ui_args['instance'] : false;
 
 						if ( $control ) {
 							$value['children'] = $control->render();
@@ -469,18 +516,23 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 				$suffix = '.min';
 			}
 
+			$js_deps  = array_unique( $this->deps['js'] );
+			$css_deps = array_unique( $this->deps['css'] );
+
+			var_dump( $js_deps );
+
 			wp_enqueue_script(
 				'cx-interface-builder',
-				$this->args['url'] . 'assets/js/cx-interface-builder' . $suffix . '.js',
-				array( 'jquery' ),
+				$this->url . 'assets/js/cx-interface-builder' . $suffix . '.js',
+				$js_deps,
 				$this->version,
 				true
 			);
 
 			wp_enqueue_style(
 				'cx-interface-builder',
-				$this->args['url'] . 'assets/css/cx-interface-builder.css',
-				array(),
+				$this->url . 'assets/css/cx-interface-builder.css',
+				$css_deps,
 				$this->version,
 				'all'
 			);

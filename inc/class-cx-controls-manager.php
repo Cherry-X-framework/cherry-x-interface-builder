@@ -20,14 +20,24 @@ if ( ! class_exists( 'CX_Controls_Manager' ) ) {
 		 *
 		 * @var string
 		 */
-		private $module_path = '';
+		private $base_path = '';
+
+		/**
+		 * Path to controls folder for current Inteface Builder instance
+		 *
+		 * @var string
+		 */
+		private $base_url = '';
 
 		/**
 		 * Constructor for the class
 		 */
-		public function __construct( $module_path = null ) {
-			$this->module_path = trailingslashit( $module_path );
-			require $this->module_path . 'inc/class-cx-controls-base.php';
+		public function __construct( $base_path = null, $base_url = null ) {
+
+			$this->base_path = trailingslashit( $base_path );
+			$this->base_url  = trailingslashit( $base_url );
+
+			require $this->base_path . 'inc/class-cx-controls-base.php';
 			$this->load_controls();
 
 		}
@@ -38,7 +48,7 @@ if ( ! class_exists( 'CX_Controls_Manager' ) ) {
 		 * @return void
 		 */
 		public function load_controls() {
-			foreach ( glob( $this->module_path . 'inc/controls/*.php' ) as $file ) {
+			foreach ( glob( $this->base_path . 'inc/controls/*.php' ) as $file ) {
 				require $file;
 			}
 		}
@@ -53,11 +63,15 @@ if ( ! class_exists( 'CX_Controls_Manager' ) ) {
 			$prefix    = 'CX_Control_';
 			$classname = $prefix . str_replace( ' ', '_', ucwords( str_replace( '-', ' ', $type ) ) );
 
-			if ( ! $classname ) {
+			if ( ! class_exists( $classname ) ) {
 				return false;
 			}
 
-			return new $classname( $args );
+			$instance = new $classname( $args );
+
+			$instance->set_base_url( $this->base_url );
+
+			return $instance;
 		}
 
 	}
