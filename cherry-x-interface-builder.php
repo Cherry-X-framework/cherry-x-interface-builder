@@ -519,8 +519,6 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 			$js_deps  = array_unique( $this->deps['js'] );
 			$css_deps = array_unique( $this->deps['css'] );
 
-			var_dump( $js_deps );
-
 			wp_enqueue_script(
 				'cx-interface-builder',
 				$this->url . 'assets/js/cx-interface-builder' . $suffix . '.js',
