@@ -57,6 +57,10 @@ if ( ! class_exists( 'CX_Control_Checkbox' ) ) {
 
 			$counter = 0;
 
+			if ( isset( $this->settings['options_callback'] ) ) {
+				$this->settings['options'] = call_user_func( $this->settings['options_callback'] );
+			}
+
 			if ( ! empty( $this->settings['options'] ) && is_array( $this->settings['options'] ) ) {
 
 				if ( ! is_array( $this->settings['value'] ) ) {

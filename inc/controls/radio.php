@@ -56,12 +56,17 @@ if ( ! class_exists( 'CX_Control_Radio' ) ) {
 		 * @since 1.0.0
 		 */
 		public function render() {
+
 			$html  = '';
 			$class = implode( ' ',
 				array(
 					$this->settings['class'],
 				)
 			);
+
+			if ( isset( $this->settings['options_callback'] ) ) {
+				$this->settings['options'] = call_user_func( $this->settings['options_callback'] );
+			}
 
 			$html .= '<div class="cx-ui-container ' . esc_attr( $class ) . '" >';
 				if ( $this->settings['options'] && ! empty( $this->settings['options'] ) && is_array( $this->settings['options'] ) ) {

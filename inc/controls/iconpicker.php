@@ -88,6 +88,30 @@ if ( ! class_exists( 'CX_Control_Iconpicker' ) ) {
 		}
 
 		/**
+		 * Register control dependencies
+		 *
+		 * @return [type] [description]
+		 */
+		public function register_depends() {
+			wp_register_script(
+				'cx-iconpicker',
+				$this->base_url . 'assets/lib/iconpicker/jquery-iconpicker.js',
+				array( 'jquery' ),
+				'1.0.0',
+				true
+			);
+		}
+
+		/**
+		 * Retrun scripts dependencies list for current control.
+		 *
+		 * @return array
+		 */
+		public function get_script_depends() {
+			return array( 'cx-iconpicker' );
+		}
+
+		/**
 		 * Get required attribute
 		 *
 		 * @return string required attribute
