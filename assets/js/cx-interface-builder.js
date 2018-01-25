@@ -206,7 +206,6 @@
 				this.select.init();
 				this.media.init();
 				this.colorpicker.init();
-
 			},
 
 			// CX-Switcher
