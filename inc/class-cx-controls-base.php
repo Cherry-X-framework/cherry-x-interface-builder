@@ -31,6 +31,13 @@ if ( ! class_exists( 'CX_Controls_Base' ) ) {
 		protected $settings = array();
 
 		/**
+		 * Default settings array
+		 *
+		 * @var array
+		 */
+		public $defaults_settings = array();
+
+		/**
 		 * Constructor method for the CX_Controls_Base class.
 		 *
 		 * @since 1.0.0
@@ -39,6 +46,7 @@ if ( ! class_exists( 'CX_Controls_Base' ) ) {
 
 			$this->defaults_settings['id'] = 'cx-control-' . uniqid();
 			$this->settings = wp_parse_args( $args, $this->defaults_settings );
+
 			$this->init();
 
 			add_action( 'wp_enqueue_scripts', array( $this, 'register_depends' ) );

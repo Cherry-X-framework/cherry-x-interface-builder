@@ -232,6 +232,10 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 						$args['type'] = $type;
 					}
 
+					if ( ! isset( $args['name'] ) && isset( $args['id'] ) ) {
+						$args['name'] = $args['id'];
+					}
+
 					if ( 'control' ===  $type ) {
 						$instance         = $this->controls->register_control( $args['type'], $args );
 						$args['instance'] = $instance;
@@ -247,6 +251,13 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 
 					if ( 'control' !== $type && 'component' !== $type ) {
 						$value['type'] = $type;
+					}
+
+					if ( ! isset( $value['id'] ) ) {
+						$value['id'] = $key;
+					}
+					if ( ! isset( $value['name'] ) ) {
+						$value['name'] = $key;
 					}
 
 					if ( 'control' ===  $type ) {
@@ -297,12 +308,6 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 					|| ( isset( $value['parent'] ) && $value['parent'] === $parent_key )
 				) {
 
-					if ( ! isset( $value['id'] ) ) {
-						$value['id'] = $key;
-					}
-					if ( ! isset( $value['name'] ) ) {
-						$value['name'] = $key;
-					}
 					$new_array[ $key ] = $value;
 
 					$children = $this->sort_structure( $structure, $key );
