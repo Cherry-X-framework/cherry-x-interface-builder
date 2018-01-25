@@ -67,10 +67,18 @@ if ( ! class_exists( 'CX_Control_Select' ) ) {
 		public function register_depends() {
 			wp_register_script(
 				'cx-select2',
-				$this->base_url . 'assets/lib/select2/select2.js',
+				$this->base_url . 'assets/lib/select2/select2.min.js',
 				array( 'jquery' ),
-				'1.0.0',
+				'4.0.5',
 				true
+			);
+
+			wp_register_style(
+				'cx-select2',
+				$this->base_url . 'assets/lib/select2/select2.min.css',
+				array(),
+				'4.0.5',
+				'all'
 			);
 		}
 
@@ -80,6 +88,15 @@ if ( ! class_exists( 'CX_Control_Select' ) ) {
 		 * @return array
 		 */
 		public function get_script_depends() {
+			return array( 'cx-select2' );
+		}
+
+		/**
+		 * Retrun styles dependencies list for current control.
+		 *
+		 * @return array
+		 */
+		public function get_style_depends() {
 			return array( 'cx-select2' );
 		}
 

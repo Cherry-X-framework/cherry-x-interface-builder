@@ -30,6 +30,39 @@ if ( ! class_exists( 'CX_Control_Colorpicker' ) ) {
 		);
 
 		/**
+		 * Register control dependencies
+		 *
+		 * @return [type] [description]
+		 */
+		public function register_depends() {
+			wp_register_script(
+				'cx-colorpicker-alpha',
+				$this->base_url . 'assets/lib/colorpicker/wp-color-picker-alpha.min.js',
+				array( 'wp-color-picker' ),
+				'1.0.0',
+				true
+			);
+		}
+
+		/**
+		 * Retrun scripts dependencies list for current control.
+		 *
+		 * @return array
+		 */
+		public function get_script_depends() {
+			return array( 'cx-colorpicker-alpha' );
+		}
+
+		/**
+		 * Retrun styles dependencies list for current control.
+		 *
+		 * @return array
+		 */
+		public function get_style_depends() {
+			return array( 'wp-color-picker' );
+		}
+
+		/**
 		 * Render html UI_Colorpicker.
 		 *
 		 * @since 1.0.0

@@ -10,10 +10,11 @@ $font_size: 14px;
 		.wp-color-result-text {
 			line-height: 18px;
 			text-align: right;
+			display: none;
 		}
 
 		.wp-color-result {
-			width: 105px;
+			width: 60px;
 			height: 26px;
 			padding: 0;
 			border: none;
