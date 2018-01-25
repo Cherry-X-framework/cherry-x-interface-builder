@@ -79,7 +79,7 @@ if ( ! class_exists( 'CX_Control_Radio' ) ) {
 							$checked    = $option == $this->settings['value'] ? ' checked' : '';
 							$radio_id   = $this->settings['id'] . '-' . $option;
 							$img        = isset( $option_value['img_src'] ) && ! empty( $option_value['img_src'] ) ? '<img src="' . esc_url( $option_value['img_src'] ) . '" alt="' . esc_html( $option_value['label'] ) . '">' : '<span class="cx-radio-item"><i></i></span>';
-							$class_box  = isset( $option_value['img_src'] ) && ! empty( $option_value['img_src'] ) ? ' cx-radio-img' : ' cx-radio-item' ;
+							$class_box  = isset( $option_value['img_src'] ) && ! empty( $option_value['img_src'] ) ? 'cx-radio-img' : 'cx-radio-item' ;
 
 							$html .= '<div class="' . $class_box . '">';
 							$html .= '<input type="radio" id="' . esc_attr( $radio_id ) . '" class="cx-radio-input" name="' . esc_attr( $this->settings['name'] ) . '" ' . checked( $option, $this->settings['value'], false ) . ' value="' . esc_attr( $option ) . '"/>';

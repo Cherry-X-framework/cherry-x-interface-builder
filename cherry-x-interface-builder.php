@@ -517,7 +517,7 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 
 			$suffix = '';
 
-			if ( defined( 'SCRIPT_DEBUG' ) && true === SCRIPT_DEBUG ) {
+			if ( defined( 'SCRIPT_DEBUG' ) && false === SCRIPT_DEBUG ) {
 				$suffix = '.min';
 			}
 

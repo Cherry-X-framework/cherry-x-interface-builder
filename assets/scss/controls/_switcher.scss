@@ -1,4 +1,4 @@
-.cx-switcher-wrap{
+.cx-switcher-wrap {
 	height: 20px;
 	border-radius: 25px;
 	display: inline-block;
@@ -22,13 +22,13 @@
 		content: '';
 	}
 
-	label{
+	label {
 		display: block;
 		float: left;
 		background-color: #eceeef;
 		transition: all 0.4s ease;
 
-		span{
+		span {
 			font-size: 7px;
 			line-height: 12px;
 			text-transform: uppercase;
@@ -40,21 +40,23 @@
 		}
 	}
 
-	.sw-enable{
+	.sw-enable {
 		padding: 4px 4px 4px 12px;
-		span{
+
+		span {
 			opacity: 0;
 		}
 	}
 
-	.sw-disable{
+	.sw-disable {
 		padding: 4px 12px 4px 4px;
-		span{
+
+		span {
 			opacity: 1;
 		}
 	}
 
-	.state-marker{
+	.state-marker {
 		background-color: white;
 		display: block;
 		position: absolute;
@@ -67,11 +69,12 @@
 		transition: all 0.4s cubic-bezier(0.77, 0, 0.175, 1);
 		box-sizing: border-box;
 	}
-	.cx-input-switcher{
+
+	.cx-input-switcher {
 		display: none;
 	}
-	.cx-input-switcher-true:checked{
 
+	.cx-input-switcher-true:checked {
 
 		~ .sw-enable{
 			background-color: #49c66a;

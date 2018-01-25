@@ -16,7 +16,7 @@ $br-radius: 5px; // Border radius.
 
 $padding: 10px;
 $margin: 10px;
-$max-heught: 700px;
+$max-height: 700px;
 
 @import "components/use-in-js";
 @import "components/variables";
@@ -39,10 +39,12 @@ $max-heught: 700px;
 .cherry-ui-container{
 	margin: 10px 0 20px 0;
 }
+
 label.cherry-label{
 	margin: 0 0 5px 0;
 	display: block;
 }
+
 .hide{
 	display: none !important;
 }
@@ -431,6 +433,7 @@ label.cherry-label{
 		}
 	}
 }
+
 .cx-settings{
 	& + & {
 		border-top: $border;
@@ -448,6 +451,7 @@ label.cherry-label{
 		}
 	}
 }
+
 .cx-control{
 	padding: $padding * 1.5 $padding * 2;
 	&__title{
@@ -494,32 +498,37 @@ label.cherry-label{
 .cx-section.cx-scroll > .cx-section__holder > .cx-section__inner,
 .cx-tab__content > .cx-scroll,
 .cx-accordion__content > .cx-scroll > .cx-settings__content,
-.cx-toggle__content > .cx-scroll > .cx-settings__content,
-{
+.cx-toggle__content > .cx-scroll > .cx-settings__content {
 	@media ( min-width: 783px ) {
-		max-height: $max-heught;
+		max-height: $max-height;
 		overflow-y: auto;
 		position: relative;
+
 		&::-webkit-scrollbar {
 			width: 10px;
 			height: 10px;
+
 			&-button {
 				width: 0px;
 				height: 0px;
 			}
+
 			&-thumb {
 				background-color: $link-color;
 				border: none;
 				border-radius: $br-radius;
+
 				&:hover, &:active {
 					background: $color-7;
 				}
 			}
+
 			&-track {
 				background-color: $color-1;
 				border: none;
 				border-radius: $br-radius;
 			}
+
 			&-corner {
 				background: transparent;
 			}

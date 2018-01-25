@@ -33,6 +33,24 @@ if ( ! class_exists( 'CX_Control_Media' ) ) {
 		);
 
 		/**
+		 * Register control dependencies
+		 *
+		 * @return [type] [description]
+		 */
+		public function register_depends() {
+			wp_enqueue_media();
+		}
+
+		/**
+		 * Retrun scripts dependencies list for current control.
+		 *
+		 * @return array
+		 */
+		public function get_script_depends() {
+			return array( 'jquery-ui-sortable' );
+		}
+
+		/**
 		 * Render html CX_Control_Media.
 		 *
 		 * @since 1.0.0

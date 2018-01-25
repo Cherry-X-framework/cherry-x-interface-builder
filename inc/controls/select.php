@@ -60,6 +60,30 @@ if ( ! class_exists( 'CX_Control_Select' ) ) {
 		);
 
 		/**
+		 * Register control dependencies
+		 *
+		 * @return [type] [description]
+		 */
+		public function register_depends() {
+			wp_register_script(
+				'cx-select2',
+				$this->base_url . 'assets/lib/select2/select2.js',
+				array( 'jquery' ),
+				'1.0.0',
+				true
+			);
+		}
+
+		/**
+		 * Retrun scripts dependencies list for current control.
+		 *
+		 * @return array
+		 */
+		public function get_script_depends() {
+			return array( 'cx-select2' );
+		}
+
+		/**
 		 * Render html UI_Select.
 		 *
 		 * @since 1.0.0
