@@ -112,7 +112,7 @@ $interface_builder->register_settings(
 );
 ```
   
-### 3. Controls
+### 5. Controls
 
 UI controls
 
@@ -165,7 +165,7 @@ $interface_builder->register_controls(
   )
 );
 ```
-### 3. HTML
+### 6. HTML
 
 Raw HTML code
 
