@@ -50,6 +50,11 @@
 
 						this.componentClick.bind( this )
 					);
+
+				$( 'body' ).on( 'cx-switcher-change', function( event ) {
+					console.log( event );
+
+				});
 			},
 
 			componentInit: function( componentClass ) {
@@ -200,6 +205,8 @@
 				this.slider.init();
 				this.select.init();
 				this.media.init();
+				this.colorpicker.init();
+
 			},
 
 			// CX-Switcher
@@ -216,10 +223,15 @@
 					var $this       = $( event.currentTarget ),
 						$inputTrue  = $( this.trueClass, $this ),
 						$inputFalse = $( this.falseClass, $this ),
-						flag        = $inputTrue[0].checked;
+						status        = $inputTrue[0].checked;
 
-					$inputTrue.attr( 'checked', ( flag ) ? false : true );
-					$inputFalse.attr( 'checked', ( ! flag ) ? false : true );
+					$inputTrue.attr( 'checked', ( status ) ? false : true );
+					$inputFalse.attr( 'checked', ( ! status ) ? false : true );
+
+					$( 'body' ).trigger( {
+						type: 'cx-switcher-change',
+						switcherStatus: status
+					} );
 				}
 
 			},//End CX-Switcher
@@ -271,6 +283,8 @@
 
 			// CX-Select
 			select: {
+				selectClass: '.cx-ui-select[data-filter="true"]:not([name*="__i__"]), .cx-ui-select[multiple]:not([name*="__i__"])',
+
 				init: function() {
 					$( document )
 						.on( 'ready.cxSelect', this.selectRender.bind( this ) )
@@ -279,6 +293,18 @@
 
 				selectRender: function() {
 					var $target = ( event._target ) ? event._target : $( 'body' );
+
+					$( this.selectClass , $target ).each( this.select2Init.bind( this ) );
+				},
+
+				select2Init: function ( index, element ) {
+					var $this   = $( element );
+
+					//.on('change.cherrySelect2', this.changeEvent.bind( this ) )
+
+					$this.select2( {
+						placeholder: $this.data( 'placeholder' )
+					} );
 				}
 			},//End CX-Select
 
@@ -429,7 +455,38 @@
 						}
 					} );
 				}
-			}//End CX-Media
+			},//End CX-Media
+
+			// CX-Colorpicker
+			colorpicker: {
+				init: function() {
+					$( document )
+						.on( 'ready.cxColorpicker', this.render.bind( this ) )
+						.on( 'cx-control-init', this.render.bind( this ) );
+				},
+
+				render: function( event ) {
+					var target = ( event._target ) ? event._target : $( 'body' ),
+						input = $( 'input.cx-ui-colorpicker:not([name*="__i__"])', target );
+
+					if ( input[0] ) {
+						input.wpColorPicker();
+					}
+				}
+			},//End CX-Colorpicker
+
+			// CX-Iconpicker
+			iconpicker: {
+				init: function() {
+					$( document )
+						.on( 'ready.cxIconpicker', this.render.bind( this ) )
+						.on( 'cx-control-init', this.render.bind( this ) );
+				},
+
+				render: function( event ) {
+					var target = ( event._target ) ? event._target : $( 'body' );
+				}
+			}//End CX-Iconpicker
 
 		}
 	};
