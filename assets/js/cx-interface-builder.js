@@ -30,6 +30,8 @@
 
 			localStorage:        {},
 
+			conditionState:      {},
+
 			init: function () {
 				this.localStorage = this.getState() || {};
 
@@ -38,6 +40,7 @@
 				this.componentInit( this.toggleClass );
 
 				this.addEvent();
+				this.conditionsHandleInit();
 			},
 
 			addEvent: function() {
@@ -50,11 +53,63 @@
 
 						this.componentClick.bind( this )
 					);
+			},
+
+			conditionsHandleInit: function() {
+				var conditionsList = window.cxInterfaceBuilder.conditions || {},
+					self           = this;
+				console.log(conditionsList);
 
 				$( 'body' ).on( 'cx-switcher-change', function( event ) {
-					console.log( event );
+					var controlName   = event.controlName,
+						controlStatus = event.controlStatus;
 
+					self.updateConditionRules( controlName, controlStatus );
+
+					/*$.each( conditionsList, function( name, conditions ) {
+						var $selector = $( '.cx-control[data-control-name="' + name + '"]' );
+						console.log($selector);
+						console.log(conditions);
+
+						if ( conditions.hasOwnProperty( controlName ) ) {
+
+							if ( conditions[controlName] ) {
+								$selector.removeClass( 'cx-control-hidden' );
+							} else {
+								$selector.addClass( 'cx-control-hidden' );
+							}
+
+						}
+					});*/
+					//console.log('------------------');
 				});
+
+				$( 'body' ).on( 'cx-select2-change', function( event ) {
+					var controlName   = event.controlName,
+						controlStatus = event.controlStatus;
+
+					self.updateConditionRules( controlName, controlStatus );
+				});
+
+				$( 'body' ).on( 'cx-checkbox-change', function( event ) {
+					var controlName   = event.controlName,
+						controlStatus = event.controlStatus;
+
+					self.updateConditionRules( controlName, controlStatus );
+				});
+
+			},
+
+			updateConditionRules: function( name, status ) {
+
+				this.conditionState[ name ] = status;
+
+				console.log(this.conditionState);
+			},
+
+			getConditionRules: function() {
+
+				return this.conditionState;
 			},
 
 			componentInit: function( componentClass ) {
@@ -222,14 +277,16 @@
 					var $this       = $( event.currentTarget ),
 						$inputTrue  = $( this.trueClass, $this ),
 						$inputFalse = $( this.falseClass, $this ),
-						status        = $inputTrue[0].checked;
+						status      = $inputTrue[0].checked,
+						name        = $inputTrue.attr( 'name' );
 
 					$inputTrue.attr( 'checked', ( status ) ? false : true );
 					$inputFalse.attr( 'checked', ( ! status ) ? false : true );
 
 					$( 'body' ).trigger( {
 						type: 'cx-switcher-change',
-						switcherStatus: status
+						controlName: name,
+						controlStatus: status
 					} );
 				}
 
@@ -245,10 +302,17 @@
 				},
 
 				switchState: function( event ) {
-					var $_input = $( event.currentTarget ).siblings( this.inputClass ),
-						flag    = $_input[0].checked;
+					var $_input   = $( event.currentTarget ).siblings( this.inputClass ),
+						status    = $_input[0].checked,
+						name      = $_input.attr( 'name' );
 
-					$_input.val( ( flag ) ? 'false' : 'true' ).attr( 'checked', ( flag ) ? false : true );
+					$_input.val( ( status ) ? 'false' : 'true' ).attr( 'checked', ( status ) ? false : true );
+
+					$( 'body' ).trigger( {
+						type: 'cx-checkbox-change',
+						controlName: name,
+						controlStatus: status
+					} );
 				}
 			},//End CX-Checkbox
 
@@ -293,16 +357,21 @@
 				selectRender: function() {
 					var $target = ( event._target ) ? event._target : $( 'body' );
 
-					$( this.selectClass , $target ).each( this.select2Init.bind( this ) );
+					$( this.selectClass, $target ).each( this.select2Init.bind( this ) );
 				},
 
 				select2Init: function ( index, element ) {
-					var $this   = $( element );
-
-					//.on('change.cherrySelect2', this.changeEvent.bind( this ) )
+					var $this = $( element ),
+						name  = $this.attr( 'name' );
 
 					$this.select2( {
 						placeholder: $this.data( 'placeholder' )
+					} ).on( 'change.cxSelect2', function( event ) {
+						$( 'body' ).trigger( {
+							type: 'cx-select2-change',
+							controlName: name,
+							controlStatus: $( event.target ).val()
+						} );
 					} );
 				}
 			},//End CX-Select

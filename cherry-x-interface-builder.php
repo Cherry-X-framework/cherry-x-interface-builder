@@ -45,6 +45,13 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 		protected $version = '1.0.0';
 
 		/**
+		 * Conditions
+		 *
+		 * @var array
+		 */
+		public $conditions = array();
+
+		/**
 		 * Module settings.
 		 *
 		 * @since  1.0.0
@@ -76,9 +83,9 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 				'view_wrapping' => true,
 				'html'          => '',
 				'scroll'        => false,
-				'master'        => false,
 				'title'         => '',
 				'description'   => '',
+				'condition'     => array(),
 			),
 		);
 
@@ -227,7 +234,6 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 		protected function add_new_element( array $args = array(), $type = 'section' ) {
 
 			if ( ! isset( $args[0] ) && ! is_array( current( $args ) ) ) {
-
 					if ( 'control' !== $type && 'component' !== $type ) {
 						$args['type'] = $type;
 					}
@@ -242,6 +248,10 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 
 						$this->add_dependencies( $instance );
 
+					}
+
+					if ( array_key_exists( 'conditions', $args ) ) {
+						$this->conditions[ $args['id'] ] = $args['conditions'];
 					}
 
 					$this->structure[ $args['id'] ] = $args;
@@ -265,6 +275,10 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 						$value['instance'] = $instance;
 
 						$this->add_dependencies( $instance );
+					}
+
+					if ( array_key_exists( 'conditions', $value ) ) {
+						$this->conditions[ $key ] = $value['conditions'];
 					}
 
 					$this->structure[ $key ] = $value;
@@ -344,10 +358,8 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 
 			if ( empty( $args['view'] ) ) {
 				$path = ( array_key_exists( $type, $this->args['views'] ) ) ? $this->args['views'][ $type ] : $this->args['views']['control'];
-
 				$path = is_array( $path ) ? $path[0] : $path;
 				$path = file_exists( $path ) ? $path : $this->path . $path;
-
 			} else {
 				$path = $args['view'];
 			}
@@ -411,10 +423,6 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 					$value['class'] .= 'cx-scroll ';
 				}
 
-				if ( $value['master'] ) {
-					$value['class'] .= $value['master'] . ' ';
-				}
-
 				$type      = array_key_exists( $value['type'], $views ) ? $value['type'] : 'field';
 				$has_child = isset( $value['children'] ) && is_array( $value['children'] ) && ! empty( $value['children'] );
 
@@ -465,8 +473,6 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 						$ui_args = $value;
 
 						$ui_args['class'] = isset( $ui_args['child_class'] ) ? $ui_args['child_class'] : '' ;
-
-						unset( $ui_args['master'] );
 
 						$control = isset( $ui_args['instance'] ) ? $ui_args['instance'] : false;
 
@@ -530,6 +536,12 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 				$js_deps,
 				$this->version,
 				true
+			);
+
+			wp_localize_script( 'cx-interface-builder', 'cxInterfaceBuilder',
+				array(
+					'conditions' => $this->conditions,
+				)
 			);
 
 			wp_enqueue_style(
