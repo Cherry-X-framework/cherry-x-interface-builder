@@ -35,9 +35,10 @@ $max-height: 700px;
 @import "controls/switcher";
 @import "controls/text";
 @import "controls/textarea";
+@import "controls/dimensions";
 
 .cherry-ui-container{
-	margin: 10px 0 20px 0;
+	margin: 10px 0 20px 0
 }
 
 label.cherry-label{
@@ -452,17 +453,21 @@ label.cherry-label{
 	}
 }
 
-.cx-control{
+.cx-control {
 	padding: $padding * 1.5 $padding * 2;
+
 	&__title{
 		margin: 0 0 $margin 0 ;
 	}
+
 	&__description{
 		margin-top: 0;
 	}
+
 	.cx-ui-container {
 		margin: 0;
 	}
+
 	@media (min-width: 783px) {
 		padding: $padding * 1.5;
 		display: flex;
@@ -477,9 +482,11 @@ label.cherry-label{
 			flex: 0 1 70%;
 		}
 	}
+
 	@media ( min-width: 961px ) {
 		padding: $padding * 3;
 	}
+
 	.widget & {
 		padding: $padding * 1.5 0;
 		flex-direction: column;
@@ -494,7 +501,7 @@ label.cherry-label{
 		}
 	}
 
-	.cx-control-hidden {
+	&-hidden {
 		display: none;
 	}
 }

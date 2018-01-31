@@ -6,12 +6,25 @@ let gulp         = require( 'gulp' ),
 	autoprefixer = require( 'gulp-autoprefixer' ),
 	sass         = require( 'gulp-sass' ),
 	minify       = require( 'gulp-minify' ),
-	uglify       = require( 'gulp-uglify' );
+	uglify       = require( 'gulp-uglify' ),
+	plumber      = require( 'gulp-plumber' );
 
 // scss
 gulp.task( 'scss', () => {
 	return gulp.src( './assets/scss/cx-interface-builder.scss' )
-		.pipe( sass( { outputStyle: 'compressed' } ))
+		.pipe(
+			plumber( {
+				errorHandler: function ( error ) {
+					console.log('=================ERROR=================');
+					console.log(error.message);
+					this.emit( 'end' );
+				}
+			})
+		)
+		.pipe( sass( {
+			outputStyle: 'compressed',
+			errLogToConsole: true
+		} ))
 		.pipe( autoprefixer( {
 				browsers: ['last 10 versions'],
 				cascade: false
@@ -35,3 +48,5 @@ gulp.task( 'watch', () => {
 	gulp.watch( './assets/scss/**', ['scss'] );
 	gulp.watch( './assets/js/*.js', ['js-minify'] );
 } );
+
+

@@ -81,12 +81,13 @@ if ( ! class_exists( 'CX_Control_Checkbox' ) ) {
 						$item_value     = 'false';
 					}
 
-					$checked      = ( ! empty( $option_checked ) && 'true' === $item_value ) ? 'checked' : '';
+					$checked      = ( ! empty( $option_checked ) && filter_var( $item_value, FILTER_VALIDATE_BOOLEAN ) ) ? 'checked' : '';
+					$item_value   = filter_var( $item_value, FILTER_VALIDATE_BOOLEAN ) ? 'true' : 'false';
 					$option_label = isset( $option_value ) && is_array( $option_value ) ? $option_value['label'] : $option_value;
 
 					$html .= '<div class="cx-checkbox-item-wrap">';
 						$html .= '<span class="cx-label-content">';
-						$html .= '<input type="hidden" id="' . esc_attr( $this->settings['id'] ) . '-' . $counter . '" class="cx-checkbox-input" name="' . esc_attr( $this->settings['name'] ) . '[' . $option . ']" ' . $checked . ' value="' . esc_html( $item_value ) . '">';
+						$html .= '<input type="hidden" id="' . esc_attr( $this->settings['id'] ) . '-' . $counter . '" class="cx-checkbox-input" name="' . esc_attr( $this->settings['name'] ) . '[' . $option . ']" ' . $checked . ' value="' . $item_value . '">';
 						$html .= '<span class="cx-checkbox-item"><span class="marker dashicons dashicons-yes"></span></span>';
 						$html .= '<label class="cx-checkbox-label" for="' . esc_attr( $this->settings['id'] ) . '-' . $counter . '"><span class="cx-label-content">' . esc_html( $option_label ) . '</span></label> ';
 						$html .= '</span>';

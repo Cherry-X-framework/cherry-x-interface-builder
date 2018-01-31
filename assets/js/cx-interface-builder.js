@@ -30,6 +30,10 @@
 
 			localStorage:        {},
 
+			controlConditions:   window.cxInterfaceBuilder.conditions || {},
+
+			controlValues:       window.cxInterfaceBuilder.fields || {},
+
 			conditionState:      {},
 
 			init: function () {
@@ -56,60 +60,108 @@
 			},
 
 			conditionsHandleInit: function() {
-				var conditionsList = window.cxInterfaceBuilder.conditions || {},
-					self           = this;
-				console.log(conditionsList);
+				var self = this;
 
-				$( 'body' ).on( 'cx-switcher-change', function( event ) {
+				$( window ).on( 'cx-switcher-change', function( event ) {
 					var controlName   = event.controlName,
 						controlStatus = event.controlStatus;
 
 					self.updateConditionRules( controlName, controlStatus );
+					self.renderConditionRules();
+				});
 
-					/*$.each( conditionsList, function( name, conditions ) {
-						var $selector = $( '.cx-control[data-control-name="' + name + '"]' );
-						console.log($selector);
-						console.log(conditions);
+				$( window ).on( 'cx-select2-change', function( event ) {
+					var controlName   = event.controlName,
+						controlStatus = event.controlStatus;
 
-						if ( conditions.hasOwnProperty( controlName ) ) {
+					self.updateConditionRules( controlName, controlStatus );
+					self.renderConditionRules();
+				});
 
-							if ( conditions[controlName] ) {
-								$selector.removeClass( 'cx-control-hidden' );
-							} else {
-								$selector.addClass( 'cx-control-hidden' );
-							}
+				$( window ).on( 'cx-radio-change', function( event ) {
+					var controlName   = event.controlName,
+						controlStatus = event.controlStatus;
 
+					self.updateConditionRules( controlName, controlStatus );
+					self.renderConditionRules();
+				});
+
+				$( window ).on( 'cx-checkbox-change', function( event ) {
+					var controlName   = event.controlName,
+						controlStatus = event.controlStatus,
+						updatedStatus = {};
+
+					$.each( controlStatus[ controlName ], function( checkbox, value ) {
+						updatedStatus[ checkbox ] = cxInterfaceBuilder.utils.filterBoolValue( value );
+					} );
+
+					self.updateConditionRules( controlName, updatedStatus );
+					self.renderConditionRules();
+				});
+
+				this.generateConditionRules();
+				self.renderConditionRules();
+
+			},
+
+			generateConditionRules: function() {
+				var self = this;
+
+				$.each( this.controlConditions, function( control, conditions ) {
+					$.each( conditions, function( control, value ) {
+						if ( self.controlValues.hasOwnProperty( control ) ) {
+							self.conditionState[ control ] = self.controlValues[ control ];
 						}
-					});*/
-					//console.log('------------------');
-				});
-
-				$( 'body' ).on( 'cx-select2-change', function( event ) {
-					var controlName   = event.controlName,
-						controlStatus = event.controlStatus;
-
-					self.updateConditionRules( controlName, controlStatus );
-				});
-
-				$( 'body' ).on( 'cx-checkbox-change', function( event ) {
-					var controlName   = event.controlName,
-						controlStatus = event.controlStatus;
-
-					self.updateConditionRules( controlName, controlStatus );
-				});
-
+					} );
+				} );
 			},
 
 			updateConditionRules: function( name, status ) {
-
 				this.conditionState[ name ] = status;
-
-				console.log(this.conditionState);
 			},
 
-			getConditionRules: function() {
+			renderConditionRules: function() {
+				var self = this;
 
-				return this.conditionState;
+				$.each( this.controlConditions, function( control, conditions ) {
+					var $selector = $( '.cx-control[data-control-name="' + control + '"]' ),
+						hidden    = true;
+
+					$selector.addClass( 'cx-control-hidden' );
+
+					$.each( conditions, function( control, value ) {
+						hidden = true;
+
+						if ( self.conditionState.hasOwnProperty( control ) ) {
+
+							if ( self.conditionState[ control ] === value ) {
+								hidden = false;
+							}
+
+							if ( 'object' === typeof self.conditionState[ control ] ) {
+								hidden = false;
+
+								$.each( value, function( prop, val ) {
+									if ( val !== self.conditionState[ control ][ prop ] ) {
+										hidden = true;
+
+										return false;
+									}
+								} );
+							}
+						}
+
+						if ( hidden ) {
+							return false;
+						}
+					} );
+
+					if ( hidden ) {
+						$selector.addClass( 'cx-control-hidden' );
+					} else {
+						$selector.removeClass( 'cx-control-hidden' );
+					}
+				} );
 			},
 
 			componentInit: function( componentClass ) {
@@ -261,6 +313,8 @@
 				this.select.init();
 				this.media.init();
 				this.colorpicker.init();
+				//this.iconpicker.init();
+				this.dimensions.init();
 			},
 
 			// CX-Switcher
@@ -280,10 +334,12 @@
 						status      = $inputTrue[0].checked,
 						name        = $inputTrue.attr( 'name' );
 
-					$inputTrue.attr( 'checked', ( status ) ? false : true );
-					$inputFalse.attr( 'checked', ( ! status ) ? false : true );
+					$inputTrue.prop( 'checked', ( status ) ? false : true );
+					$inputFalse.prop( 'checked', ( ! status ) ? false : true );
 
-					$( 'body' ).trigger( {
+					status = $inputTrue[0].checked;
+
+					$( window ).trigger( {
 						type: 'cx-switcher-change',
 						controlName: name,
 						controlStatus: status
@@ -302,16 +358,20 @@
 				},
 
 				switchState: function( event ) {
-					var $_input   = $( event.currentTarget ).siblings( this.inputClass ),
-						status    = $_input[0].checked,
-						name      = $_input.attr( 'name' );
+					var $_input    = $( event.currentTarget ).siblings( this.inputClass ),
+						status     = $_input[0].checked,
+						$parent    = $( event.currentTarget ).closest( '.cx-control-checkbox' ),
+						name       = $parent.data( 'control-name' ),
+						statusData = {};
 
-					$_input.val( ( status ) ? 'false' : 'true' ).attr( 'checked', ( status ) ? false : true );
+					$_input.val( ! status ? 'true' : 'false' ).attr( 'checked', ! status ? true : false );
 
-					$( 'body' ).trigger( {
+					statusData = cxInterfaceBuilder.utils.serializeObject( $parent );
+
+					$( window ).trigger( {
 						type: 'cx-checkbox-change',
 						controlName: name,
-						controlStatus: status
+						controlStatus: statusData
 					} );
 				}
 			},//End CX-Checkbox
@@ -326,6 +386,12 @@
 
 				switchState: function( event ) {
 					var $this = $( event.currentTarget );
+
+					$( window ).trigger( {
+						type: 'cx-radio-change',
+						controlName: $this.attr( 'name' ),
+						controlStatus: $( $this ).val()
+					} );
 				}
 			},//End CX-Radio
 
@@ -367,7 +433,7 @@
 					$this.select2( {
 						placeholder: $this.data( 'placeholder' )
 					} ).on( 'change.cxSelect2', function( event ) {
-						$( 'body' ).trigger( {
+						$( window ).trigger( {
 							type: 'cx-select2-change',
 							controlName: name,
 							controlStatus: $( event.target ).val()
@@ -545,18 +611,262 @@
 
 			// CX-Iconpicker
 			iconpicker: {
+				iconSets: {},
+				iconSetsKey: 'cherry5-icon-sets',
+
 				init: function() {
 					$( document )
+						.on( 'ready.cxIconpicker', this.setIconsSets.bind( this, window.cherry5IconSets ) )
 						.on( 'ready.cxIconpicker', this.render.bind( this ) )
 						.on( 'cx-control-init', this.render.bind( this ) );
 				},
 
-				render: function( event ) {
-					var target = ( event._target ) ? event._target : $( 'body' );
-				}
-			}//End CX-Iconpicker
+				setIconsSets: function( iconSets ) {
+					var icon,
+						_this = this;
 
+					if ( iconSets ) {
+						icon  = ( iconSets.response ) ? iconSets.response.cherry5IconSets : iconSets;
+
+						underscore.each(
+							icon,
+							function( element, index ) {
+								_this.iconSets[ index ] = element;
+							}
+						);
+
+						_this.setState( _this.iconSetsKey, _this.iconSets );
+					}
+				},
+
+				getIconsSets: function() {
+					var iconSets = this.getState( this.iconSetsKey );
+
+					if ( iconSets ) {
+						this.iconSets = iconSets;
+					}
+				},
+
+				render: function( event ) {
+					var target = ( event._target ) ? event._target : $( 'body' ),
+						$picker = $( '.cx-ui-iconpicker:not([name*="__i__"])', target ),
+						$this,
+						set,
+						setData,
+						_this = this;
+
+						console.log($picker);
+
+					if ( $picker[0] ) {
+						this.getIconsSets();
+
+						$picker.each( function() {
+							$this   = $( this );
+							set     = $this.data( 'set' );
+							setData = _this.iconSets[set];
+
+							console.log(setData);
+
+							if ( $this.length && setData.icons ) {
+								$this.iconpicker({
+									icons: setData.icons,
+									iconBaseClass: setData.iconBase,
+									iconClassPrefix: setData.iconPrefix,
+									animation: false,
+									fullClassFormatter: function( val ) {
+										return setData.iconBase + ' ' + setData.iconPrefix + val;
+									}
+								}).on( 'iconpickerUpdated', function() {
+									$( this ).trigger( 'change' );
+								});
+							}
+
+							if ( setData ) {
+								$( 'head' ).append( '<link rel="stylesheet" type="text/css" href="' + setData.iconCSS + '"">' );
+							}
+						} );
+					}
+				},
+
+				getState: function( key ) {
+					try {
+						return JSON.parse( window.sessionStorage.getItem( key ) );
+					} catch ( e ) {
+						return false;
+					}
+				},
+
+				setState: function( key, data ) {
+					try {
+						window.sessionStorage.setItem( key, JSON.stringify( data ) );
+					} catch ( e ) {
+						return false;
+					}
+				}
+			},//End CX-Iconpicker
+
+			// CX-Dimensions
+			dimensions: {
+				container: '.cx-ui-dimensions',
+				isLinked: '.cx-ui-dimensions__is-linked',
+				units: '.cx-ui-dimensions__unit',
+				unitsInput: 'input[name*="[units]"]',
+				linkedInput: 'input[name*="[is_linked]"]',
+				valuesInput: '.cx-ui-dimensions__val',
+
+				init: function() {
+					$( 'body' )
+						.on( 'click', this.isLinked, { 'self': this }, this.switchLinked )
+						.on( 'click', this.units, { 'self': this }, this.switchUnits )
+						.on( 'input', this.valuesInput + '.is-linked', { 'self': this }, this.changeLinked );
+				},
+
+				render: function( event ) {
+
+				},
+
+				switchLinked: function( event ) {
+					console.log('test');
+
+					var self       = event.data.self,
+						$this      = $( this ),
+						$container = $this.closest( self.container ),
+						$input     = $container.find( self.linkedInput ),
+						$values    = $container.find( self.valuesInput ),
+						isLinked   = $input.val();
+
+					if ( 0 === parseInt( isLinked ) ) {
+						$input.val(1);
+						$this.addClass( 'is-linked' );
+						$values.addClass( 'is-linked' );
+					} else {
+						$input.val(0);
+						$this.removeClass( 'is-linked' );
+						$values.removeClass( 'is-linked' );
+					}
+
+				},
+
+				switchUnits: function( event ) {
+					var self       = event.data.self,
+						$this      = $( this ),
+						unit       = $this.data( 'unit' ),
+						$container = $this.closest( self.container ),
+						$input     = $container.find( self.unitsInput ),
+						$values    = $container.find( self.valuesInput ),
+						range      = $container.data( 'range' );
+
+					if ( $this.hasClass( 'is-active' ) ) {
+						return;
+					}
+
+					$this.addClass( 'is-active' ).siblings( self.units ).removeClass( 'is-active' );
+					$input.val( unit );
+					$values.attr({
+						min: range[ unit ].min,
+						max: range[ unit ].max,
+						step: range[ unit ].step
+					});
+
+				},
+
+				changeLinked: function( event ) {
+					var self  = event.data.self,
+						$this = $( this ),
+						$container = $this.closest( '.cx-ui-dimensions__values' );
+
+					$( self.valuesInput, $container ).val( $this.val() )
+				}
+			}//End CX-Dimensions
+
+		},
+
+		utils: {
+
+			/**
+			 * Serialize form into
+			 *
+			 * @return {Object}
+			 */
+			serializeObject: function( selector ) {
+
+				var self = this,
+					json = {},
+					pushCounters = {},
+					patterns = {
+						'validate': /^[a-zA-Z][a-zA-Z0-9_-]*(?:\[(?:\d*|[a-zA-Z0-9_-]+)\])*$/,
+						'key':      /[a-zA-Z0-9_-]+|(?=\[\])/g,
+						'push':     /^$/,
+						'fixed':    /^\d+$/,
+						'named':    /^[a-zA-Z0-9_-]+$/
+					},
+					serialized;
+
+				this.build = function( base, key, value ) {
+					base[ key ] = value;
+
+					return base;
+				};
+
+				this.push_counter = function( key ) {
+					if ( undefined === pushCounters[ key ] ) {
+						pushCounters[ key ] = 0;
+					}
+
+					return pushCounters[ key ]++;
+				};
+
+				if ( 'FORM' === selector[0].tagName ) {
+					serialized = selector.serializeArray();
+				} else {
+					serialized = selector.find( 'input, textarea, select' ).serializeArray();
+				}
+
+				$.each( serialized, function() {
+					var k, keys, merge, reverseKey;
+
+					// Skip invalid keys
+					if ( ! patterns.validate.test( this.name ) ) {
+						return;
+					}
+
+					keys = this.name.match( patterns.key );
+					merge = this.value;
+					reverseKey = this.name;
+
+					while ( undefined !== ( k = keys.pop() ) ) {
+
+						// Adjust reverseKey
+						reverseKey = reverseKey.replace( new RegExp( '\\[' + k + '\\]$' ), '' );
+
+						// Push
+						if ( k.match( patterns.push ) ) {
+							merge = self.build( [], self.push_counter( reverseKey ), merge );
+						} else if ( k.match( patterns.fixed ) ) {
+							merge = self.build( [], k, merge );
+						} else if ( k.match( patterns.named ) ) {
+							merge = self.build( {}, k, merge );
+						}
+					}
+
+					json = $.extend( true, json, merge );
+				});
+
+				return json;
+			},
+
+			/**
+			 * Boolean value check
+			 *
+			 * @return {Boolean}
+			 */
+			filterBoolValue: function( value ) {
+				var num = +value;
+
+				return ! isNaN( num ) ? !! num : !! String( value ).toLowerCase().replace( !!0, '' );
+			}
 		}
+
 	};
 
 	cxInterfaceBuilder.init();

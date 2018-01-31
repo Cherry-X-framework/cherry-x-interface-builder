@@ -52,6 +52,12 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 		public $conditions = array();
 
 		/**
+		 * [$conditions description]
+		 * @var array
+		 */
+		public $fields_value = array();
+
+		/**
 		 * Module settings.
 		 *
 		 * @since  1.0.0
@@ -254,6 +260,10 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 						$this->conditions[ $args['id'] ] = $args['conditions'];
 					}
 
+					if ( array_key_exists( 'value', $args ) ) {
+						$this->fields_value[ $args['id'] ] = $args['value'];
+					}
+
 					$this->structure[ $args['id'] ] = $args;
 
 			} else {
@@ -279,6 +289,10 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 
 					if ( array_key_exists( 'conditions', $value ) ) {
 						$this->conditions[ $key ] = $value['conditions'];
+					}
+
+					if ( array_key_exists( 'value', $value ) ) {
+						$this->fields_value[ $key ] = $value['value'];
 					}
 
 					$this->structure[ $key ] = $value;
@@ -325,6 +339,7 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 					$new_array[ $key ] = $value;
 
 					$children = $this->sort_structure( $structure, $key );
+
 					if ( ! empty( $children ) ) {
 						$new_array[ $key ]['children'] = $children;
 					}
@@ -541,6 +556,7 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 			wp_localize_script( 'cx-interface-builder', 'cxInterfaceBuilder',
 				array(
 					'conditions' => $this->conditions,
+					'fields'     => $this->fields_value,
 				)
 			);
 
