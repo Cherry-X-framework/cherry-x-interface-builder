@@ -1,7 +1,7 @@
 /**
  * Interface Builder
  */
-;( function( $ ) {
+;( function( $, underscore ) {
 
 	'use strict';
 
@@ -313,7 +313,7 @@
 				this.select.init();
 				this.media.init();
 				this.colorpicker.init();
-				//this.iconpicker.init();
+				this.iconpicker.init();
 				this.dimensions.init();
 			},
 
@@ -612,28 +612,25 @@
 			// CX-Iconpicker
 			iconpicker: {
 				iconSets: {},
-				iconSetsKey: 'cherry5-icon-sets',
+				iconSetsKey: 'cx-icon-sets',
 
 				init: function() {
 					$( document )
-						.on( 'ready.cxIconpicker', this.setIconsSets.bind( this, window.cherry5IconSets ) )
+						.on( 'ready.cxIconpicker', this.setIconsSets.bind( this, window.CxIconSets ) )
 						.on( 'ready.cxIconpicker', this.render.bind( this ) )
 						.on( 'cx-control-init', this.render.bind( this ) );
 				},
 
 				setIconsSets: function( iconSets ) {
-					var icon,
+					var icons,
 						_this = this;
 
 					if ( iconSets ) {
-						icon  = ( iconSets.response ) ? iconSets.response.cherry5IconSets : iconSets;
+						icons  = ( iconSets.response ) ? iconSets.response.CxIconSets : iconSets;
 
-						underscore.each(
-							icon,
-							function( element, index ) {
-								_this.iconSets[ index ] = element;
-							}
-						);
+						$.each( icons, function( name, data ) {
+							_this.iconSets[name] = data;
+						} );
 
 						_this.setState( _this.iconSetsKey, _this.iconSets );
 					}
@@ -655,8 +652,6 @@
 						setData,
 						_this = this;
 
-						console.log($picker);
-
 					if ( $picker[0] ) {
 						this.getIconsSets();
 
@@ -664,8 +659,6 @@
 							$this   = $( this );
 							set     = $this.data( 'set' );
 							setData = _this.iconSets[set];
-
-							console.log(setData);
 
 							if ( $this.length && setData.icons ) {
 								$this.iconpicker({
@@ -871,4 +864,4 @@
 
 	cxInterfaceBuilder.init();
 
-}( jQuery ) );
+}( jQuery, window._ ) );
