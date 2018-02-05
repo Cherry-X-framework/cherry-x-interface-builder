@@ -315,6 +315,7 @@
 				this.colorpicker.init();
 				this.iconpicker.init();
 				this.dimensions.init();
+				this.repeater.init();
 			},
 
 			// CX-Switcher
@@ -770,8 +771,178 @@
 
 					$( self.valuesInput, $container ).val( $this.val() )
 				}
-			}//End CX-Dimensions
+			},//End CX-Dimensions
 
+			// CX-Repeater
+			repeater: {
+				repeaterContainerClass: '.cx-ui-repeater-container',
+				repeaterListClass: '.cx-ui-repeater-list',
+				repeaterItemClass: '.cx-ui-repeater-item',
+				repeaterItemHandleClass: '.cx-ui-repeater-actions-box',
+				repeaterTitleClass: '.cx-ui-repeater-title',
+				addItemButtonClass: '.cx-ui-repeater-add',
+				removeItemButtonClass: '.cx-ui-repeater-remove',
+				toggleItemButtonClass: '.cx-ui-repeater-toggle',
+				minItemClass: 'cx-ui-repeater-min',
+				sortablePlaceholderClass: 'sortable-placeholder',
+
+				init: function() {
+					$( document ).on( 'ready.cxRepeat', this.addEvents.bind( this ) );
+				},
+
+				addEvents: function() {
+					console.log(this.repeaterListClass + ' input, ' + this.repeaterListClass + ' textarea, ' + this.repeaterListClass + ' select');
+					$( 'body' )
+						.on( 'click', this.addItemButtonClass, { 'self': this }, this.addItem )
+						.on( 'click', this.removeItemButtonClass, { 'self': this }, this.removeItem )
+						.on( 'click', this.toggleItemButtonClass, { 'self': this }, this.toggleItem )
+						.on( 'change', this.repeaterListClass + ' input, ' + this.repeaterListClass + ' textarea, ' + this.repeaterListClass + ' select', { 'self': this }, this.changeWrapperLable )
+						.on( 'sortable-init', { 'self': this }, this.sortableItem );
+
+					$( document )
+						.on( 'cx-control-init', { 'self': this }, this.sortableItem );
+
+					this.triggers();
+				},
+
+				triggers: function( $target ) {
+					$( 'body' ).trigger( 'sortable-init' );
+
+					if ( $target ) {
+						$( document ).trigger( 'cx-control-init', { 'target': $target } );
+					}
+
+					return this;
+				},
+
+				addItem: function( event ) {
+					var self        = event.data.self,
+						$list       = $( this ).prev( self.repeaterListClass ),
+						index       = $list.data( 'index' ),
+						tmplName    = $list.data( 'name' ),
+						rowTemplate = wp.template( tmplName ),
+						widgetId    = $list.data( 'widget-id' ),
+						data        = { index: index };
+
+					widgetId = '__i__' !== widgetId ? widgetId : $list.attr( 'id' ) ;
+
+					if ( widgetId ) {
+						data.widgetId = widgetId;
+					}
+
+					$list.append( rowTemplate( data ) );
+
+					index++;
+					$list.data( 'index', index );
+
+					self.triggers( $( self.repeaterItemClass + ':last', $list ) ).stopDefaultEvent( event );
+				},
+
+				removeItem: function( event ) {
+					var self  = event.data.self,
+						$list = $( this ).closest( self.repeaterListClass );
+
+					self.applyChanges( $list );
+
+					$( this ).closest( self.repeaterItemClass ).remove();
+
+					self
+						.triggers()
+						.stopDefaultEvent( event );
+				},
+
+				toggleItem: function( event ) {
+					var self = event.data.self,
+						$container = $( this ).closest( self.repeaterItemClass );
+
+					$container.toggleClass( self.minItemClass );
+
+					self.stopDefaultEvent( event );
+				},
+
+				sortableItem: function( event ) {
+					var self  = event.data.self,
+						$list = $( self.repeaterListClass ),
+						$this,
+						initFlag;
+
+					$list.each( function( indx, element ) {
+						$this    = $( element );
+						initFlag = $( element ).data( 'sortable-init' );
+
+						if ( ! initFlag ) {
+							$this.sortable( {
+								items: self.repeaterItemClass,
+								handle: self.repeaterItemHandleClass,
+								cursor: 'move',
+								scrollSensitivity: 40,
+								forcePlaceholderSize: true,
+								forceHelperSize: false,
+								distance: 2,
+								tolerance: 'pointer',
+								helper: function( event, element ) {
+									return element.clone()
+										.find( ':input' )
+										.attr( 'name', function( i, currentName ) {
+											return 'sort_' + parseInt( Math.random() * 100000, 10 ).toString() + '_' + currentName;
+										} )
+										.end();
+								},
+								opacity: 0.65,
+								placeholder: self.sortablePlaceholderClass,
+								create: function() {
+									$this.data( 'sortable-init', true );
+								},
+								update: function( event ) {
+									var target = $( event.target );
+
+									self.applyChanges( target );
+								}
+							} );
+						} else {
+							$this.sortable( 'refresh' );
+						}
+					} );
+				},
+
+				changeWrapperLable: function( event ) {
+					var self        = event.data.self,
+						$list       = $( self.repeaterListClass ),
+						titleFilds  = $list.data( 'title-field' ),
+						$this       = $( this ),
+						value,
+						parentItem;
+
+					console.log(titleFilds);
+					console.log($this.closest( '.' + titleFilds + '-wrap' ));
+
+					if ( titleFilds && $this.closest( '.' + titleFilds + '-wrap' )[0] ) {
+						value       = $this.val(),
+						parentItem  = $this.closest( self.repeaterItemClass );
+
+						$( self.repeaterTitleClass, parentItem ).html( value );
+					}
+
+					self.stopDefaultEvent( event );
+				},
+
+				applyChanges: function( target ) {
+					if ( undefined !== wp.customize ) {
+						$( 'input[name]:first, select[name]:first', target ).change();
+					}
+
+					return this;
+				},
+
+				stopDefaultEvent: function( event ) {
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					event.stopPropagation();
+
+					return this;
+				}
+
+			}
 		},
 
 		utils: {
