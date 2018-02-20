@@ -9,7 +9,7 @@ Module for building interfaces parts and UI elements.
 3. Initialize module on `wp` hook or later, but earlier than `admin_enquque_scripts`, `wp_enqueue_scripts` with priority 10, Example:
 
 ```php
-add_action( 'admin_enquque_scripts', 'twentyseventeen_ui', 0 );
+add_action( 'admin_enqueue_scripts', 'twentyseventeen_ui', 0 );
 function twentyseventeen_ui() {
 	$interface_builder = new CX_Interface_Builder( array(
 		'path' => get_theme_file_path( 'framework/modules/interface-builder/' ),
