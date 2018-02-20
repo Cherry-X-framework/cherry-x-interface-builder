@@ -83,6 +83,15 @@ if ( ! class_exists( 'CX_Control_Repeater' ) ) {
 		}
 
 		/**
+		 * Retrun scripts dependencies list for current control.
+		 *
+		 * @return array
+		 */
+		public function get_script_depends() {
+			return array( 'jquery-ui-sortable' );
+		}
+
+		/**
 		 * Get required attribute.
 		 *
 		 * @return string required attribute

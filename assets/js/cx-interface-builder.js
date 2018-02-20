@@ -564,31 +564,33 @@
 					} ); // end each
 
 					// Image ordering
-					$('.cx-all-images-wrap', target).sortable( {
-						items: 'div.cx-image-wrap',
-						cursor: 'move',
-						scrollSensitivity: 40,
-						forcePlaceholderSize: true,
-						forceHelperSize: false,
-						helper: 'clone',
-						opacity: 0.65,
-						placeholder: 'cx-media-thumb-sortable-placeholder',
-						start:function(){},
-						stop:function(){},
-						update: function() {
-							var attachment_ids = '';
+					if ( $buttons[0] ) {
+						$('.cx-all-images-wrap', target).sortable( {
+							items: 'div.cx-image-wrap',
+							cursor: 'move',
+							scrollSensitivity: 40,
+							forcePlaceholderSize: true,
+							forceHelperSize: false,
+							helper: 'clone',
+							opacity: 0.65,
+							placeholder: 'cx-media-thumb-sortable-placeholder',
+							start:function(){},
+							stop:function(){},
+							update: function() {
+								var attachment_ids = '';
 
-							$('.cx-image-wrap', this).each(
-								function() {
-									var attachment_id = $('.preview-holder', this).data( 'id-attr' );
-										attachment_ids = attachment_ids + attachment_id + ',';
-								}
-							);
+								$('.cx-image-wrap', this).each(
+									function() {
+										var attachment_id = $('.preview-holder', this).data( 'id-attr' );
+											attachment_ids = attachment_ids + attachment_id + ',';
+									}
+								);
 
-							attachment_ids = attachment_ids.substr(0, attachment_ids.lastIndexOf(',') );
-							$(this).parent().siblings('.cx-element-wrap').find('input.cx-upload-input').val( attachment_ids ).trigger( 'change' );
-						}
-					} );
+								attachment_ids = attachment_ids.substr(0, attachment_ids.lastIndexOf(',') );
+								$(this).parent().siblings('.cx-element-wrap').find('input.cx-upload-input').val( attachment_ids ).trigger( 'change' );
+							}
+						} );
+					}
 				}
 			},//End CX-Media
 
@@ -791,7 +793,6 @@
 				},
 
 				addEvents: function() {
-					console.log(this.repeaterListClass + ' input, ' + this.repeaterListClass + ' textarea, ' + this.repeaterListClass + ' select');
 					$( 'body' )
 						.on( 'click', this.addItemButtonClass, { 'self': this }, this.addItem )
 						.on( 'click', this.removeItemButtonClass, { 'self': this }, this.removeItem )
