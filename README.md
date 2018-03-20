@@ -11,9 +11,13 @@ Module for building interfaces parts and UI elements.
 ```php
 add_action( 'admin_enqueue_scripts', 'twentyseventeen_ui', 0 );
 function twentyseventeen_ui() {
+	global $twentyseventeen_loader;
+
+	$builder_data = $twentyseventeen_loader->get_included_module_data( 'cherry-x-interface-builder.php' );
+
 	$interface_builder = new CX_Interface_Builder( array(
-		'path' => get_theme_file_path( 'framework/modules/interface-builder/' ),
-		'url'  => get_theme_file_uri( 'framework/modules/interface-builder/' ),
+		'path' => $builder_data['path'],
+		'url'  => $builder_data['url'],
 	) );
 }
 ```
