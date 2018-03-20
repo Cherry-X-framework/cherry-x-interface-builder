@@ -20,7 +20,7 @@ function twentyseventeen_ui() {
 
 ## Arguments:
 `CX_Interface_Builder` accepts an array of options with next structure:
-* `path` - path to module folder 
+* `path` - path to module folder
 * `url` - URL to module folder
 
 This information moved to argumnets to get path and URL with apropriate functions for themes and plugins.
@@ -37,11 +37,16 @@ Wrapper for large UI elemnts block, for example heading, form, footer
 ```php
 add_action( 'admin_enquque_scripts', 'twentyseventeen_ui', 0 );
 function twentyseventeen_ui() {
+
+	global $twentyseventeen_loader;
+
+	$builder_data = $twentyseventeen_loader->get_included_module_data( 'cherry-x-interface-builder.php' );
+
 	$interface_builder = new CX_Interface_Builder( array(
-		'path' => get_theme_file_path( 'framework/modules/interface-builder/' ),
-		'url'  => get_theme_file_uri( 'framework/modules/interface-builder/' ),
+		'path' => $builder_data['path'],
+		'url'  => $builder_data['url'],
 	) );
-  
+
   $interface_builder->register_section(
 		'options_section' => array(
 			'type'        => 'section',
@@ -50,7 +55,7 @@ function twentyseventeen_ui() {
 			'description' => __( 'Options formed with Cherry X Interface Builder.', 'twentyseventeen' ),
 		),
 	);
-  
+
 }
 ```
 ### 2. Forms
@@ -83,7 +88,7 @@ $interface_builder->register_component(
 		),
 );
 ```
-Allowed components types are: 
+Allowed components types are:
 * component-accordion
 * component-toggle
 * component-tab-vertical
@@ -111,7 +116,7 @@ $interface_builder->register_settings(
   )
 );
 ```
-  
+
 ### 5. Controls
 
 UI controls
