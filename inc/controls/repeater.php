@@ -88,7 +88,7 @@ if ( ! class_exists( 'CX_Control_Repeater' ) ) {
 		 * @return array
 		 */
 		public function get_script_depends() {
-			return array( 'jquery-ui-sortable' );
+			return array( 'jquery-ui-sortable', 'wp-util' );
 		}
 
 		/**
