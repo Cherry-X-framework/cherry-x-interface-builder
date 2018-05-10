@@ -1,12 +1,18 @@
 .cx-switcher-wrap {
+	width: 54px;
 	height: 20px;
 	border-radius: 25px;
-	display: inline-block;
-	overflow: hidden;
 	position: relative;
 	cursor: pointer;
 	user-select: none;
+	overflow: hidden;
 	background-color: white;
+
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: center;
+	align-items: center;
+
 	transform: translateZ(0);
 
 	&:after {
@@ -24,7 +30,6 @@
 
 	label {
 		display: block;
-		float: left;
 		background-color: #eceeef;
 		transition: all 0.4s ease;
 
