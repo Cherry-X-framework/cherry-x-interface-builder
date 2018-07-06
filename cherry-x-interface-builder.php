@@ -2,7 +2,7 @@
 /**
  * Interface Builder module
  *
- * Version: 1.0.1
+ * Version: 1.1.0
  */
 
 // If this file is called directly, abort.
@@ -313,6 +313,22 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 
 			$this->deps['js']  = array_merge( $this->deps['js'], $control->get_script_depends() );
 			$this->deps['css'] = array_merge( $this->deps['css'], $control->get_style_depends() );
+
+			$constrol_settings = $control->get_settings();
+
+			if ( 'repeater' === $constrol_settings['type'] && ! empty( $constrol_settings['fields'] ) ) {
+				foreach ( $constrol_settings['fields'] as $field ) {
+					$child_instance = $this->controls->register_control( $field['type'], $field );
+
+					if ( $child_instance ) {
+
+						$this->deps['js']  = array_merge( $this->deps['js'], $child_instance->get_script_depends() );
+						$this->deps['css'] = array_merge( $this->deps['css'], $child_instance->get_style_depends() );
+
+					}
+
+				}
+			}
 
 		}
 

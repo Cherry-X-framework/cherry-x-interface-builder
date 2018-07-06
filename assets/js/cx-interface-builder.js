@@ -722,7 +722,6 @@
 				},
 
 				switchLinked: function( event ) {
-					console.log('test');
 
 					var self       = event.data.self,
 						$this      = $( this ),
@@ -823,12 +822,17 @@
 						tmplName    = $list.data( 'name' ),
 						rowTemplate = wp.template( tmplName ),
 						widgetId    = $list.data( 'widget-id' ),
-						data        = { index: index };
+						data        = { index: index },
+						$parent     = $list.parent().closest( self.repeaterListClass );
 
 					widgetId = '__i__' !== widgetId ? widgetId : $list.attr( 'id' ) ;
 
 					if ( widgetId ) {
 						data.widgetId = widgetId;
+					}
+
+					if ( $parent.length ) {
+						data.parentIndex = parseInt( $parent.data( 'index' ), 10 ) - 1;
 					}
 
 					$list.append( rowTemplate( data ) );
@@ -913,9 +917,6 @@
 						$this       = $( this ),
 						value,
 						parentItem;
-
-					console.log(titleFilds);
-					console.log($this.closest( '.' + titleFilds + '-wrap' ));
 
 					if ( titleFilds && $this.closest( '.' + titleFilds + '-wrap' )[0] ) {
 						value       = $this.val(),

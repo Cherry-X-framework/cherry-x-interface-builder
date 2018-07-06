@@ -70,6 +70,20 @@ if ( ! class_exists( 'CX_Control_Repeater' ) ) {
 		public static $customizer_tmpl_printed = false;
 
 		/**
+		 * Child repeater instances
+		 *
+		 * @var array
+		 */
+		private $_childs = array();
+
+		/**
+		 * Check if we render template for JS
+		 *
+		 * @var boolean
+		 */
+		private $_is_js_row = false;
+
+		/**
 		 * Init.
 		 *
 		 * @since 1.0.0
@@ -137,6 +151,7 @@ if ( ! class_exists( 'CX_Control_Repeater' ) ) {
 				if ( is_array( $this->settings['value'] ) ) {
 					$index = 0;
 					foreach ( $this->settings['value'] as $data ) {
+						$this->_is_js_row = false;
 						$html .= $this->render_row( $index, false, $data );
 						$index++;
 					}
@@ -201,7 +216,18 @@ if ( ! class_exists( 'CX_Control_Repeater' ) ) {
 			$html .= '</div>';
 			$html .= '<div class="cheryr-ui-repeater-content-box">';
 			foreach ( $this->settings['fields'] as $field ) {
-				$html .= '<div class="' . $field['id'] . '-wrap">';
+
+				$field_classes = array(
+					$field['id'] . '-wrap',
+				);
+
+				if ( ! empty( $field['class'] ) ) {
+					$field_classes[] = $field['class'];
+				}
+
+				$field_classes = implode( ' ', $field_classes );
+
+				$html .= '<div class="' . $field_classes . '">';
 				$html .= $this->render_field( $index, $widget_index, $field );
 				$html .= '</div>';
 			}
@@ -251,6 +277,7 @@ if ( ! class_exists( 'CX_Control_Repeater' ) ) {
 			) );
 
 			$parent_name    = str_replace( '__i__', $widget_index, $this->settings['name'] );
+			$parent_name    = str_replace( '{{{data.index}}}', '{{{data.parentIndex}}}', $parent_name );
 			$field['id']    = sprintf( '%s-%s', $field['id'], $index );
 			$field['value'] = isset( $this->data[ $field['name'] ] ) ? $this->data[ $field['name'] ] : $field['value'];
 			$field['name']  = sprintf( '%1$s[item-%2$s][%3$s]', $parent_name, $index, $field['name'] );
@@ -262,6 +289,10 @@ if ( ! class_exists( 'CX_Control_Repeater' ) ) {
 			}
 
 			$ui_item = new $ui_class_name( $field );
+
+			if ( 'repeater' === $ui_item->settings['type'] && true === $this->_is_js_row ) {
+				$this->_childs[] = $ui_item;
+			}
 
 			return $ui_item->render();
 		}
@@ -297,7 +328,15 @@ if ( ! class_exists( 'CX_Control_Repeater' ) ) {
 		 * @return void
 		 */
 		public function print_js_template() {
+
 			echo $this->get_js_template();
+
+			if ( ! empty( $this->_childs ) ) {
+				foreach ( $this->_childs as $child ) {
+					echo $child->get_js_template();
+				}
+			}
+
 		}
 
 		/**
@@ -306,6 +345,8 @@ if ( ! class_exists( 'CX_Control_Repeater' ) ) {
 		 * @return string
 		 */
 		public function get_js_template() {
+
+			$this->_is_js_row = true;
 
 			return sprintf(
 				'<script type="text/html" id="tmpl-%1$s">%2$s</script>',

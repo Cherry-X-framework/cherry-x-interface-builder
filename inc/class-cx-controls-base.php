@@ -54,6 +54,15 @@ if ( ! class_exists( 'CX_Controls_Base' ) ) {
 		}
 
 		/**
+		 * Returns control settings
+		 *
+		 * @return array
+		 */
+		public function get_settings() {
+			return $this->settings;
+		}
+
+		/**
 		 * Render methos. Each UI element must implement own method
 		 * @return [type] [description]
 		 */
