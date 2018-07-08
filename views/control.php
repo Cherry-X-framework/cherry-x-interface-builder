@@ -8,7 +8,7 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 ?>
-<div class="cx-ui-kit cx-control cx-control-<?php echo esc_attr( $args['type'] ); ?>" data-control-name="<?php echo esc_attr( $args['name'] ); ?>">
+<div class="cx-ui-kit cx-control cx-control-<?php echo esc_attr( $args['type'] ); ?>" data-control-name="<?php echo esc_attr( $args['id'] ); ?>">
 	<?php if ( ! empty( $args['title'] ) || ! empty( $args['description'] ) ) { ?>
 		<div class="cx-control__info">
 			<?php if ( ! empty( $args['title'] ) ) { ?>

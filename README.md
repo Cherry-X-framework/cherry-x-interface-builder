@@ -190,3 +190,152 @@ $cx_interface_builder->register_settings(
     )
 );
 ```
+### 7. Show/Hide conditions
+
+You can hide and show controls based on conditions, you just need to set in the settings 'conditions', then sets id controls, for which state you need to watch
+
+Switcher Control
+
+```php
+'switcher_test' => array(
+	'type'         => 'switcher',
+	'parent'       => 'ui_elements',
+	'title'        => esc_html__( 'Switcher', 'blank-plugin' ),
+	'description'  => esc_html__( 'Analogue of the regular HTML radio buttons.', 'blank-plugin' ),
+	'value'        => 'false',
+	'toggle'       => array(
+		'true_toggle'  => 'On',
+		'false_toggle' => 'Off',
+	),
+	'class'        => '',
+	'label'        => '',
+),
+'button_normal' => array(
+	'type'        => 'button',
+	'parent'      => 'ui_elements',
+	'title'       => esc_html__( 'Normal Button', 'blank-plugin' ),
+	'description' => esc_html__( 'Description Normal Button(Button type)', 'blank-plugin' ),
+	'content'     => esc_html__( 'Normal Button', 'blank-plugin' ),
+	'class'       => '',
+	'conditions'  => array(
+		'switcher_test' => true
+	),
+),
+```
+
+Select Control
+
+```php
+'select_test' => array(
+	'type'          => 'select',
+	'parent'        => 'ui_elements',
+	'title'         => esc_html__( 'Select', 'blank-plugin' ),
+	'description'   => esc_html__( 'Description select.', 'blank-plugin' ),
+	'multiple'      => false,
+	'filter'        => true,
+	'value'         => 'select-8',
+	'options'       => array(
+		'select-1'   => 'select 1',
+		'select-2'   => 'select 2',
+		'select-3'   => 'select 3',
+		'select-4'   => 'select 4',
+		'select-5'   => 'select 5',
+	),
+	'placeholder'   => 'Select',
+	'label'         => '',
+	'class'         => '',
+),
+'button_success' => array(
+	'type'        => 'button',
+	'parent'      => 'ui_elements',
+	'title'       => esc_html__( 'Success Button', 'blank-plugin' ),
+	'description' => esc_html__( 'Description Success Button(Submit type)', 'blank-plugin' ),
+	'content'     => esc_html__( 'Success Button', 'blank-plugin' ),
+	'button_type' => 'submit',
+	'class'       => '',
+	'style'       => 'success',
+	'conditions'  => array(
+		'switcher_test' => false,
+		'select_test' => 'select-1'
+	),
+),
+```
+Checkbox Control
+
+```php
+'checkbox_multi_test' => array(
+	'type'        => 'checkbox',
+	'parent'      => 'ui_elements',
+	'title'       => esc_html__( 'Multi Checkbox', 'blank-plugin' ),
+	'description' => esc_html__( 'Description multi checkbox.', 'blank-plugin' ),
+	'class'       => '',
+	'value'       => array(
+		'checkbox-0' => 'false',
+		'checkbox-1' => 'false',
+		'checkbox-2' => 'false',
+		'checkbox-3' => 'true',
+		'checkbox-4' => 'true',
+	),
+	'options' => array(
+		'checkbox-0' => array(
+			'label' => esc_html__( 'Check Me #1', 'blank-plugin' ),
+		),
+		'checkbox-1' => esc_html__( 'Check Me #2', 'blank-plugin' ),
+		'checkbox-2' => esc_html__( 'Check Me #3', 'blank-plugin' ),
+		'checkbox-3' => esc_html__( 'Check Me #4', 'blank-plugin' ),
+		'checkbox-4' => esc_html__( 'Check Me #5', 'blank-plugin' ),
+	),
+),
+'button_danger' => array(
+	'type'        => 'button',
+	'parent'      => 'ui_elements',
+	'title'       => esc_html__( 'Danger Button', 'blank-plugin' ),
+	'description' => esc_html__( 'Description Danger Button.', 'blank-plugin' ),
+	'content'     => esc_html__( 'Danger Button', 'blank-plugin' ),
+	'class'       => '',
+	'style'       => 'danger',
+	'conditions'  => array(
+		'checkbox_multi_test' => array(
+			'checkbox-3',
+			'checkbox-4',
+		)
+	),
+),
+```
+
+Radio Control
+
+```php
+'radio_test' => array(
+	'type'        => 'radio',
+	'parent'      => 'ui_elements',
+	'title'       => esc_html__( 'Radio Button', 'blank-plugin' ),
+	'description' => esc_html__( 'Adds radio buttons group. Lets user select one option from the list.', 'blank-plugin' ),
+	'value'       => 'radio-2',
+	'options'     => array(
+		'radio-1' => array(
+			'label' => 'Radio #1',
+		),
+		'radio-2' => array(
+			'label' => 'Radio #2',
+		),
+		'radio-3' => array(
+			'label' => 'Radio #3',
+		),
+	),
+	'class' => '',
+	'label' => '',
+),
+'button_warning' => array(
+	'type'        => 'button',
+	'parent'      => 'ui_elements',
+	'title'       => esc_html__( 'Warning Button', 'blank-plugin' ),
+	'description' => esc_html__( 'Description Warning Button.', 'blank-plugin' ),
+	'content'     => esc_html__( 'Warning Button', 'blank-plugin' ),
+	'class'       => '',
+	'style'       => 'warning',
+	'conditions'  => array(
+		'radio_test' => 'radio-2'
+	)
+),
+```

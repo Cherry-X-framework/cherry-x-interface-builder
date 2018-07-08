@@ -70,6 +70,14 @@
 					self.renderConditionRules();
 				});
 
+				$( window ).on( 'cx-select-change', function( event ) {
+					var controlName   = event.controlName,
+						controlStatus = event.controlStatus;
+
+					self.updateConditionRules( controlName, controlStatus );
+					self.renderConditionRules();
+				});
+
 				$( window ).on( 'cx-select2-change', function( event ) {
 					var controlName   = event.controlName,
 						controlStatus = event.controlStatus;
@@ -141,8 +149,9 @@
 							if ( 'object' === typeof self.conditionState[ control ] ) {
 								hidden = false;
 
-								$.each( value, function( prop, val ) {
-									if ( val !== self.conditionState[ control ][ prop ] ) {
+								$.each( self.conditionState[ control ], function( prop, val ) {
+
+									if ( ! val && -1 !== value.indexOf( prop ) ) {
 										hidden = true;
 
 										return false;
@@ -333,7 +342,8 @@
 						$inputTrue  = $( this.trueClass, $this ),
 						$inputFalse = $( this.falseClass, $this ),
 						status      = $inputTrue[0].checked,
-						name        = $inputTrue.attr( 'name' );
+						$parent     = $( event.currentTarget ).closest( '.cx-control-switcher' ),
+						name        = $parent.data( 'control-name' );
 
 					$inputTrue.prop( 'checked', ( status ) ? false : true );
 					$inputFalse.prop( 'checked', ( ! status ) ? false : true );
@@ -386,11 +396,13 @@
 				},
 
 				switchState: function( event ) {
-					var $this = $( event.currentTarget );
+					var $this   = $( event.currentTarget ),
+						$parent = $( event.currentTarget ).closest( '.cx-control-radio' ),
+						name    = $parent.data( 'control-name' );
 
 					$( window ).trigger( {
 						type: 'cx-radio-change',
-						controlName: $this.attr( 'name' ),
+						controlName: name,
 						controlStatus: $( $this ).val()
 					} );
 				}
@@ -413,7 +425,8 @@
 
 			// CX-Select
 			select: {
-				selectClass: '.cx-ui-select[data-filter="true"]:not([name*="__i__"]), .cx-ui-select[multiple]:not([name*="__i__"])',
+				selectClass: '.cx-ui-select[data-filter="false"]:not([name*="__i__"])',
+				select2Class: '.cx-ui-select[data-filter="true"]:not([name*="__i__"]), .cx-ui-select[multiple]:not([name*="__i__"])',
 
 				init: function() {
 					$( document )
@@ -424,12 +437,26 @@
 				selectRender: function( event ) {
 					var $target = ( event._target ) ? event._target : $( 'body' );
 
-					$( this.selectClass, $target ).each( this.select2Init.bind( this ) );
+					$( this.selectClass, $target ).each( this.selectInit.bind( this ) );
+					$( this.select2Class, $target ).each( this.select2Init.bind( this ) );
+				},
+
+				selectInit: function ( index, element ) {
+					var $this = $( element ),
+						name  = $this.attr( 'id' );
+
+					$this.change( function( event ) {
+						$( window ).trigger( {
+							type: 'cx-select-change',
+							controlName: name,
+							controlStatus: $( event.target ).val()
+						} );
+					});
 				},
 
 				select2Init: function ( index, element ) {
 					var $this = $( element ),
-						name  = $this.attr( 'name' );
+						name  = $this.attr( 'id' );
 
 					$this.select2( {
 						placeholder: $this.data( 'placeholder' )
