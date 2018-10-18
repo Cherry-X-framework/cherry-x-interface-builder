@@ -142,8 +142,14 @@
 
 						if ( self.conditionState.hasOwnProperty( control ) ) {
 
-							if ( self.conditionState[ control ] === value ) {
-								hidden = false;
+							if ( 'string' === typeof value ) {
+								if ( self.conditionState[ control ] === value ) {
+									hidden = false;
+								}
+							} else {
+								if ( -1 !== value.indexOf( self.conditionState[ control ] ) ) {
+									hidden = false;
+								}
 							}
 
 							if ( 'object' === typeof self.conditionState[ control ] ) {
@@ -158,6 +164,7 @@
 									}
 								} );
 							}
+
 						}
 
 						if ( hidden ) {
@@ -427,11 +434,20 @@
 			select: {
 				selectClass: '.cx-ui-select[data-filter="false"]:not([name*="__i__"])',
 				select2Class: '.cx-ui-select[data-filter="true"]:not([name*="__i__"]), .cx-ui-select[multiple]:not([name*="__i__"])',
+				selectClearClass: '.cx-ui-select-clear',
 
 				init: function() {
+
 					$( document )
 						.on( 'ready.cxSelect', this.selectRender.bind( this ) )
-						.on( 'cx-control-init', this.selectRender.bind( this ) );
+						.on( 'cx-control-init', this.selectRender.bind( this ) )
+						.on( 'click.cxSelect', this.selectClearClass, this.clearSelect );
+
+				},
+
+				clearSelect: function( event ) {
+					event.preventDefault();
+					$( this ).siblings( 'select' ).val( null ).trigger( 'change' );
 				},
 
 				selectRender: function( event ) {
@@ -455,12 +471,27 @@
 				},
 
 				select2Init: function ( index, element ) {
-					var $this = $( element ),
-						name  = $this.attr( 'id' );
+					var $this    = $( element ),
+						name     = $this.attr( 'id' ),
+						settings = { placeholder: $this.data( 'placeholder' ) },
+						postType = $this.data( 'post-type' ),
+						exclude  = $this.data( 'exclude' ),
+						action   = $this.data( 'action' );
 
-					$this.select2( {
-						placeholder: $this.data( 'placeholder' )
-					} ).on( 'change.cxSelect2', function( event ) {
+					if ( action && postType ) {
+
+						settings.ajax = {
+							url: function() {
+								return ajaxurl + '?action=' + action + '&post_type=' + postType + '&exclude=' + exclude;
+							},
+							dataType: 'json'
+						};
+
+						settings.minimumInputLength = 3;
+
+					}
+
+					$this.select2( settings ).on( 'change.cxSelect2', function( event ) {
 						$( window ).trigger( {
 							type: 'cx-select2-change',
 							controlName: name,
@@ -500,10 +531,26 @@
 							});
 
 						if ( ! buttonParent.has('input[name*="__i__"]')[ 0 ] ) {
+
 							button.off( 'click.cx-media' ).on( 'click.cx-media', function() {
 								cx_uploader.open();
 								return !1;
 							} ); // end click
+
+							if ( button.data( 'multi-upload' ) ) {
+								cx_uploader.on( 'open', function() {
+
+									var selection = cx_uploader.state().get( 'selection' );
+									var selected  = settings.input.val();
+
+									if ( selected ) {
+										selected = selected.split(',');
+										selected.forEach( function( imgID ) {
+											selection.add( wp.media.attachment( imgID ) );
+										} );
+									}
+								});
+							}
 
 							cx_uploader.on('select', function() {
 									var attachment     = cx_uploader.state().get( 'selection' ).toJSON(),
@@ -514,9 +561,7 @@
 										delimiter      = '';
 
 									if ( settings.multiple ) {
-										input_value = settings.input.val();
-										delimiter   = ',';
-										new_img     = new_img_object.html();
+										delimiter = ',';
 									}
 
 									while( attachment[ count ] ) {

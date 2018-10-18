@@ -2,7 +2,7 @@
 /**
  * Interface Builder module
  *
- * Version: 1.1.1
+ * Version: 1.4.1
  */
 
 // If this file is called directly, abort.
@@ -42,20 +42,20 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 		 *
 		 * @var string
 		 */
-		protected $version = '1.1.1';
+		protected $version = '1.4.1';
 
 		/**
 		 * Conditions
 		 *
 		 * @var array
 		 */
-		public $conditions = array();
+		public static $conditions = array();
 
 		/**
 		 * [$conditions description]
 		 * @var array
 		 */
-		public $fields_value = array();
+		public static $fields_value = array();
 
 		/**
 		 * Module settings.
@@ -126,7 +126,7 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 		 * Dependencies array
 		 * @var array
 		 */
-		private $deps = array(
+		private static $deps = array(
 			'css' => array(),
 			'js'  => array( 'jquery' ),
 		);
@@ -257,11 +257,11 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 					}
 
 					if ( array_key_exists( 'conditions', $args ) ) {
-						$this->conditions[ $args['id'] ] = $args['conditions'];
+						self::$conditions[ $args['id'] ] = $args['conditions'];
 					}
 
 					if ( array_key_exists( 'value', $args ) ) {
-						$this->fields_value[ $args['id'] ] = $args['value'];
+						self::$fields_value[ $args['id'] ] = $args['value'];
 					}
 
 					$this->structure[ $args['id'] ] = $args;
@@ -288,11 +288,11 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 					}
 
 					if ( array_key_exists( 'conditions', $value ) ) {
-						$this->conditions[ $key ] = $value['conditions'];
+						self::$conditions[ $key ] = $value['conditions'];
 					}
 
 					if ( array_key_exists( 'value', $value ) ) {
-						$this->fields_value[ $key ] = $value['value'];
+						self::$fields_value[ $key ] = $value['value'];
 					}
 
 					$this->structure[ $key ] = $value;
@@ -311,8 +311,8 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 				return;
 			}
 
-			$this->deps['js']  = array_merge( $this->deps['js'], $control->get_script_depends() );
-			$this->deps['css'] = array_merge( $this->deps['css'], $control->get_style_depends() );
+			self::$deps['js']  = array_merge( self::$deps['js'], $control->get_script_depends() );
+			self::$deps['css'] = array_merge( self::$deps['css'], $control->get_style_depends() );
 
 			$constrol_settings = $control->get_settings();
 
@@ -322,8 +322,8 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 
 					if ( $child_instance ) {
 
-						$this->deps['js']  = array_merge( $this->deps['js'], $child_instance->get_script_depends() );
-						$this->deps['css'] = array_merge( $this->deps['css'], $child_instance->get_style_depends() );
+						self::$deps['js']  = array_merge( self::$deps['js'], $child_instance->get_script_depends() );
+						self::$deps['css'] = array_merge( self::$deps['css'], $child_instance->get_style_depends() );
 
 					}
 
@@ -558,8 +558,8 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 				$suffix = '.min';
 			}
 
-			$js_deps  = array_unique( $this->deps['js'] );
-			$css_deps = array_unique( $this->deps['css'] );
+			$js_deps  = array_unique( self::$deps['js'] );
+			$css_deps = array_unique( self::$deps['css'] );
 
 			wp_enqueue_script(
 				'cx-interface-builder',
@@ -571,8 +571,8 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 
 			wp_localize_script( 'cx-interface-builder', 'cxInterfaceBuilder',
 				array(
-					'conditions' => $this->conditions,
-					'fields'     => $this->fields_value,
+					'conditions' => self::$conditions,
+					'fields'     => self::$fields_value,
 				)
 			);
 
