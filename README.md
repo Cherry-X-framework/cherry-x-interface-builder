@@ -52,13 +52,15 @@ function twentyseventeen_ui() {
 	) );
 
   $interface_builder->register_section(
+  	array(
 		'options_section' => array(
 			'type'        => 'section',
 			'scroll'      => true,
 			'title'       => __( 'Options Section', 'twentyseventeen' ),
 			'description' => __( 'Options formed with Cherry X Interface Builder.', 'twentyseventeen' ),
-		),
-	);
+  		),
+	)
+  );
 
 }
 ```
@@ -68,11 +70,13 @@ HTML `<form>` element. All controls should be wrapped into this element. Example
 
 ```php
 $interface_builder->register_form(
+	array(
 		'options_form' => array(
 			'type'   => 'form',
 			'parent' => 'options_section',
 			'action' => admin_url( 'admin.php?action=process_my_form' ),
 		),
+	)
 );
 ```
 
@@ -84,12 +88,14 @@ Interface components like a tabs, accordions etc.
 
 ```php
 $interface_builder->register_component(
+	array(
 		'accordion' => array(
 			'type'        => 'component-accordion',
 			'parent'      => 'options_form',
 			'title'       => esc_html__( 'Component accordion', 'twentyseventeen' ),
 			'description' => esc_html__( 'Component Description', 'twentyseventeen' ),
 		),
+	)
 );
 ```
 Allowed components types are:
@@ -126,7 +132,7 @@ $interface_builder->register_settings(
 UI controls
 
 ```php
-$interface_builder->register_controls(
+$interface_builder->register_control(
   array(
 		'checkbox_4' => array(
 			'type'        => 'checkbox',
