@@ -253,7 +253,7 @@ if ( ! class_exists( 'CX_Control_Iconpicker' ) ) {
 
 			ob_start();
 
-			$path = str_replace( WP_CONTENT_URL, WP_CONTENT_DIR, $this->settings['icon_data']['icon_css'] );
+			$path = str_replace( content_url(), WP_CONTENT_DIR, $this->settings['icon_data']['icon_css'] );
 			if ( file_exists( $path ) ) {
 				include $path;
 			}
