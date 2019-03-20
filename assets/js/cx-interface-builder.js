@@ -482,7 +482,7 @@
 
 						settings.ajax = {
 							url: function() {
-								return ajaxurl + '?action=' + action + '&post_type=' + postType + '&exclude=' + exclude;
+								return ajaxurl + '?action=' + action + '&post_type=' + $this.data( 'post-type' ) + '&exclude=' + exclude;
 							},
 							dataType: 'json'
 						};
