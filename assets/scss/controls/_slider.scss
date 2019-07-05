@@ -3,7 +3,15 @@
 	display: flex;
 	flex-wrap: wrap;
 
-	.cx-slider-input{
+	&.cx-slider-wrap__labels-range {
+		.cx-slider-input {
+			.cx-ui-stepper {
+				display: none;
+			}
+		}
+	}
+
+	.cx-slider-input {
 		flex: 0 1 10%;
 		min-width: 100px;
 		max-width: 200px;

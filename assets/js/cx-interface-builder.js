@@ -435,11 +435,18 @@
 						var $rangeLabel = $( '.cx-slider-range-label', $sliderWrapper ),
 							rangeLabels = $sliderSettings['range_labels'];
 
+						if ( 0 === +$thisVal ) {
+							$rangeLabel.html( rangeLabels[+$thisVal]['label'] );
+							$rangeLabel.css( 'color', rangeLabels[+$thisVal]['color'] );
+
+							return false;
+						}
+
 						Object.keys(rangeLabels).reduce( function( prev, current, index, array ) {
 
-							if ( ( +$thisVal > +prev && +$thisVal <= +current ) || 0 === +$thisVal ) {
-								$rangeLabel.html( rangeLabels[+$thisVal]['label'] );
-								$rangeLabel.css( 'color', rangeLabels[+$thisVal]['color'] );
+							if ( ( +$thisVal > +prev && +$thisVal <= +current ) ) {
+								$rangeLabel.html( rangeLabels[+current]['label'] );
+								$rangeLabel.css( 'color', rangeLabels[+current]['color'] );
 							}
 
 							return current;
