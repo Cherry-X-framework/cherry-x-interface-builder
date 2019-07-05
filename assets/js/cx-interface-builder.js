@@ -422,11 +422,29 @@
 				},
 
 				changeHandler: function( event ) {
-					var $this          = $( event.currentTarget ),
-						$sliderWrapper = $this.closest( '.cx-slider-wrap' ),
-						targetClass    = ( ! $this.hasClass( 'cx-slider-unit' ) ) ? '.cx-slider-unit' : '.cx-ui-stepper-input';
+					var $this            = $( event.currentTarget ),
+						$thisVal         = $this.val(),
+						$sliderWrapper   = $this.closest( '.cx-slider-wrap' ),
+						$sliderContainer = $this.closest( '.cx-ui-container' ),
+						$sliderSettings  = $sliderContainer.data( 'settings' ),
+						targetClass      = ( ! $this.hasClass( 'cx-slider-unit' ) ) ? '.cx-slider-unit' : '.cx-ui-stepper-input';
 
-					$( targetClass, $sliderWrapper ).val( $this.val() );
+					$( targetClass, $sliderWrapper ).val( $thisVal );
+
+					if ( $sliderSettings['range_label'] ) {
+						var $rangeLabel = $( '.cx-slider-range-label', $sliderWrapper ),
+							rangeLabels = $sliderSettings['range_labels'];
+
+						Object.keys(rangeLabels).reduce( function( prev, current, index, array ) {
+
+							if ( ( +$thisVal > +prev && +$thisVal <= +current ) || 0 === +$thisVal ) {
+								$rangeLabel.html( rangeLabels[+$thisVal]['label'] );
+								$rangeLabel.css( 'color', rangeLabels[+$thisVal]['color'] );
+							}
+
+							return current;
+						} );
+					}
 				}
 			},//End CX-Slider
 

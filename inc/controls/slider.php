@@ -22,14 +22,37 @@ if ( ! class_exists( 'CX_Control_Slider' ) ) {
 		 * @var array
 		 */
 		public $defaults_settings = array(
-			'id'         => 'cx-ui-slider-id',
-			'name'       => 'cx-ui-slider-name',
-			'max_value'  => 100,
-			'min_value'  => 0,
-			'value'      => 50,
-			'step_value' => 1,
-			'label'      => '',
-			'class'      => '',
+			'id'           => 'cx-ui-slider-id',
+			'name'         => 'cx-ui-slider-name',
+			'max_value'    => 100,
+			'min_value'    => 0,
+			'value'        => 50,
+			'step_value'   => 1,
+			'range_label'  => false,
+			'range_labels' => array(
+				0   => array(
+					'label' => 'None',
+					'color' => '#48c569',
+				),
+				25  => array(
+					'label' => 'Low',
+					'color' => '#ffc900',
+				),
+				50  => array(
+					'label' => 'Medium',
+					'color' => '#faa730',
+				),
+				75  => array(
+					'label' => 'Advanced',
+					'color' => '#f95b48',
+				),
+				100 => array(
+					'label' => 'Full',
+					'color' => '#e54343',
+				),
+			),
+			'label'        => '',
+			'class'        => '',
 		);
 
 		/**
@@ -41,41 +64,45 @@ if ( ! class_exists( 'CX_Control_Slider' ) ) {
 
 			$html = '';
 
+			$ui_stepper_html = '<div class="cx-slider-input">';
+
+			if ( ! filter_var( $this->settings['range_label'], FILTER_VALIDATE_BOOLEAN ) ) {
+				$ui_stepper = new CX_Control_Stepper(
+					array(
+						'id'         => $this->settings['id'] . '-stepper',
+						'name'       => $this->settings['name'],
+						'max_value'  => $this->settings['max_value'],
+						'min_value'  => $this->settings['min_value'],
+						'value'      => $this->settings['value'],
+						'step_value' => $this->settings['step_value'],
+					)
+				);
+
+				$ui_stepper_html .= $ui_stepper->render();
+			} else {
+				$ui_stepper_html .= '<div class="cx-slider-range-label"></div>';
+			}
+
+			$ui_stepper_html .= '</div>';
+
+			if ( '' !== $this->settings['label'] ) {
+				$html .= '<label class="cx-label" for="' . esc_attr( $this->settings['id'] ) . '">' . esc_html( $this->settings['label'] ) . '</label> ';
+			}
+			$html .= '<div class="cx-slider-wrap">';
+				$html .= '<div class="cx-slider-holder">';
+					$html .= '<input type="range" class="cx-slider-unit" step="' . esc_attr( $this->settings['step_value'] ) . '" min="' . esc_attr( $this->settings['min_value'] ) . '" max="' . esc_attr( $this->settings['max_value'] ) . '" value="' . esc_attr( $this->settings['value'] ) . '">';
+				$html .= '</div>';
+				$html .= $ui_stepper_html;
+			$html .= '</div>';
+
 			$class = implode( ' ',
 				array(
+					'cx-ui-container',
 					$this->settings['class'],
 				)
 			);
 
-			$html .= '<div class="cx-ui-container ' . esc_attr( $class ) . '">';
-
-			$ui_stepper = new CX_Control_Stepper(
-				array(
-					'id'         => $this->settings['id'] . '-stepper',
-					'name'       => $this->settings['name'],
-					'max_value'  => $this->settings['max_value'],
-					'min_value'  => $this->settings['min_value'],
-					'value'      => $this->settings['value'],
-					'step_value' => $this->settings['step_value'],
-				)
-			);
-
-			$ui_stepper_html = $ui_stepper->render();
-
-				if ( '' !== $this->settings['label'] ) {
-					$html .= '<label class="cx-label" for="' . esc_attr( $this->settings['id'] ) . '">' . esc_html( $this->settings['label'] ) . '</label> ';
-				}
-				$html .= '<div class="cx-slider-wrap">';
-					$html .= '<div class="cx-slider-holder">';
-						$html .= '<input type="range" class="cx-slider-unit" step="' . esc_attr( $this->settings['step_value'] ) . '" min="' . esc_attr( $this->settings['min_value'] ) . '" max="' . esc_attr( $this->settings['max_value'] ) . '" value="' . esc_attr( $this->settings['value'] ) . '">';
-					$html .= '</div>';
-					$html .= '<div class="cx-slider-input">';
-						$html .= $ui_stepper_html;
-					$html .= '</div>';
-				$html .= '</div>';
-			$html .= '</div>';
-
-			return $html;
+			return sprintf( '<div class="%s" data-settings=\'%s\'>%s</div>', esc_attr( $class ), json_encode( $this->settings, JSON_UNESCAPED_SLASHES ), $html );
 		}
 
 		/**
