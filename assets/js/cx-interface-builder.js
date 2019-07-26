@@ -141,15 +141,24 @@
 						hidden = true;
 
 						if ( self.conditionState.hasOwnProperty( control ) ) {
+							var type = typeof value;
 
-							if ( 'string' === typeof value ) {
-								if ( self.conditionState[ control ] === value ) {
-									hidden = false;
-								}
-							} else {
-								if ( -1 !== value.indexOf( self.conditionState[ control ] ) ) {
-									hidden = false;
-								}
+							switch( type ){
+								case 'string':
+									if ( self.conditionState[ control ] === value ) {
+										hidden = false;
+									}
+									break;
+								case 'array':
+									if ( -1 !== value.indexOf( self.conditionState[ control ] ) ) {
+										hidden = false;
+									}
+									break;
+								case 'boolean':
+									if ( self.conditionState[ control ].toString() === value.toString() ) {
+										hidden = false;
+									}
+									break;
 							}
 
 							if ( 'object' === typeof self.conditionState[ control ] ) {
@@ -170,6 +179,7 @@
 						if ( hidden ) {
 							return false;
 						}
+
 					} );
 
 					if ( hidden ) {
