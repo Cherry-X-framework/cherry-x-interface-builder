@@ -30,7 +30,44 @@ if ( ! class_exists( 'CX_Control_Textarea' ) ) {
 			'cols'        => '20',
 			'label'       => '',
 			'class'       => '',
+			'maxlength'   => false,
+			'required'    => false,
 		);
+
+		/**
+		 * Get required attribute.
+		 *
+		 * @since 1.0.0
+		 * @return string
+		 */
+		public function get_required() {
+
+			if ( ! empty( $this->settings['required'] ) ) {
+				return 'required="required"';
+			}
+
+			return '';
+		}
+
+		/**
+		 * Get maxlength attribute
+		 *
+		 * @return [type] [description]
+		 */
+		public function get_maxlength() {
+
+			if ( empty( $this->settings['maxlength'] ) ) {
+				return;
+			}
+
+			$maxlength = absint( $this->settings['maxlength'] );
+
+			if ( ! $maxlength ) {
+				return;
+			}
+
+			return 'maxlength="' . $maxlength . '"';
+		}
 
 		/**
 		 * Render html UI_Textarea.
@@ -50,7 +87,7 @@ if ( ! class_exists( 'CX_Control_Textarea' ) ) {
 				if ( '' !== $this->settings['label'] ) {
 					$html .= '<label class="cx-label" for="' . esc_attr( $this->settings['id'] ) . '">' . $this->settings['label'] . '</label> ';
 				}
-				$html .= '<textarea id="' . esc_attr( $this->settings['id'] ) . '" class="cx-ui-textarea" name="' . esc_attr( $this->settings['name'] ) . '" rows="' . esc_attr( $this->settings['rows'] ) . '" cols="' . esc_attr( $this->settings['cols'] ) . '" placeholder="' . esc_attr( $this->settings['placeholder'] ) . '">' . esc_html( $this->settings['value'] ) . '</textarea>';
+				$html .= '<textarea id="' . esc_attr( $this->settings['id'] ) . '" class="cx-ui-textarea" name="' . esc_attr( $this->settings['name'] ) . '" rows="' . esc_attr( $this->settings['rows'] ) . '" cols="' . esc_attr( $this->settings['cols'] ) . '" placeholder="' . esc_attr( $this->settings['placeholder'] ) . '" ' . $this->get_required() . ' ' . $this->get_maxlength() . '>' . esc_html( $this->settings['value'] ) . '</textarea>';
 			$html .= '</div>';
 
 			return $html;
