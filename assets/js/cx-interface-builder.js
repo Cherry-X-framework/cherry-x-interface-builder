@@ -143,19 +143,19 @@
 						if ( self.conditionState.hasOwnProperty( control ) ) {
 							var type = typeof value;
 
-							switch( type ){
+							switch ( type ) {
 								case 'string':
-									if ( self.conditionState[ control ] === value ) {
-										hidden = false;
-									}
-									break;
-								case 'array':
-									if ( -1 !== value.indexOf( self.conditionState[ control ] ) ) {
+									if ( self.conditionState[control] === value ) {
 										hidden = false;
 									}
 									break;
 								case 'boolean':
-									if ( self.conditionState[ control ].toString() === value.toString() ) {
+									if ( self.conditionState[control].toString() === value.toString() ) {
+										hidden = false;
+									}
+									break;
+								default :
+									if ( -1 !== value.indexOf( self.conditionState[control] ) ) {
 										hidden = false;
 									}
 									break;
