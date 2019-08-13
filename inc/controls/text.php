@@ -36,21 +36,6 @@ if ( ! class_exists( 'CX_Control_Text' ) ) {
 		);
 
 		/**
-		 * Get required attribute.
-		 *
-		 * @since 1.0.0
-		 * @return string
-		 */
-		public function get_required() {
-
-			if ( $this->settings['required'] ) {
-				return 'required="required"';
-			}
-
-			return '';
-		}
-
-		/**
 		 * Get maxlength attribute
 		 *
 		 * @return [type] [description]

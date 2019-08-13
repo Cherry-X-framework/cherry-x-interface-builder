@@ -63,6 +63,21 @@ if ( ! class_exists( 'CX_Controls_Base' ) ) {
 		}
 
 		/**
+		 * Get required attribute.
+		 *
+		 * @since 1.0.0
+		 * @return string
+		 */
+		public function get_required() {
+
+			if ( $this->settings['required'] ) {
+				return 'required="required"';
+			}
+
+			return '';
+		}
+
+		/**
 		 * Render methos. Each UI element must implement own method
 		 * @return [type] [description]
 		 */

@@ -35,21 +35,6 @@ if ( ! class_exists( 'CX_Control_Textarea' ) ) {
 		);
 
 		/**
-		 * Get required attribute.
-		 *
-		 * @since 1.0.0
-		 * @return string
-		 */
-		public function get_required() {
-
-			if ( ! empty( $this->settings['required'] ) ) {
-				return 'required="required"';
-			}
-
-			return '';
-		}
-
-		/**
 		 * Get maxlength attribute
 		 *
 		 * @return [type] [description]

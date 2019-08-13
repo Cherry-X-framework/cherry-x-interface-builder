@@ -29,10 +29,11 @@ if ( ! class_exists( 'CX_Control_Radio' ) ) {
 		 * @var array
 		 */
 		public $defaults_settings = array(
-			'id'      => 'cx-ui-radio-id',
-			'name'    => 'cx-ui-radio-name',
-			'value'   => 'radio-2',
-			'options' => array(
+			'id'       => 'cx-ui-radio-id',
+			'name'     => 'cx-ui-radio-name',
+			'value'    => 'radio-2',
+			'required' => false,
+			'options'  => array(
 				'radio-1' => array(
 					'label'   => 'Radio 1',
 					'img_src' => '',
@@ -82,7 +83,7 @@ if ( ! class_exists( 'CX_Control_Radio' ) ) {
 							$class_box  = isset( $option_value['img_src'] ) && ! empty( $option_value['img_src'] ) ? 'cx-radio-img' : 'cx-radio-item' ;
 
 							$html .= '<div class="' . $class_box . '">';
-							$html .= '<input type="radio" id="' . esc_attr( $radio_id ) . '" class="cx-radio-input" name="' . esc_attr( $this->settings['name'] ) . '" ' . checked( $option, $this->settings['value'], false ) . ' value="' . esc_attr( $option ) . '"/>';
+							$html .= '<input type="radio" id="' . esc_attr( $radio_id ) . '" class="cx-radio-input" name="' . esc_attr( $this->settings['name'] ) . '" ' . checked( $option, $this->settings['value'], false ) . ' value="' . esc_attr( $option ) . '" ' . $this->get_required() . '/>';
 							$label_content = $img . $option_value['label'];
 							$html .= '<label for="' . esc_attr( $radio_id ) . '"><span class="cx-lable-content">' . $label_content . '</span></label> ';
 							$html .= '</div>';

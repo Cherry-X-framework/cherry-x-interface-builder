@@ -22,9 +22,10 @@ if ( ! class_exists( 'CX_Control_Checkbox' ) ) {
 		 * @var array
 		 */
 		public $defaults_settings = array(
-			'id'    => 'cx-checkbox-id',
-			'name'  => 'cx-checkbox-name',
-			'value' => array(
+			'id'       => 'cx-checkbox-id',
+			'name'     => 'cx-checkbox-name',
+			'required' => false,
+			'value'    => array(
 				'checkbox-1' => 'true',
 				'checkbox-2' => 'true',
 				'checkbox-3' => 'true',
@@ -87,7 +88,7 @@ if ( ! class_exists( 'CX_Control_Checkbox' ) ) {
 
 					$html .= '<div class="cx-checkbox-item-wrap">';
 						$html .= '<span class="cx-label-content">';
-						$html .= '<input type="hidden" id="' . esc_attr( $this->settings['id'] ) . '-' . $counter . '" class="cx-checkbox-input" name="' . esc_attr( $this->settings['name'] ) . '[' . $option . ']" ' . $checked . ' value="' . $item_value . '">';
+						$html .= '<input type="hidden" id="' . esc_attr( $this->settings['id'] ) . '-' . $counter . '" class="cx-checkbox-input" name="' . esc_attr( $this->settings['name'] ) . '[' . $option . ']" ' . $checked . ' value="' . $item_value . '" ' . $this->get_required() . '>';
 						$html .= '<span class="cx-checkbox-item"><span class="marker dashicons dashicons-yes"></span></span>';
 						$html .= '<label class="cx-checkbox-label" for="' . esc_attr( $this->settings['id'] ) . '-' . $counter . '"><span class="cx-label-content">' . esc_html( $option_label ) . '</span></label> ';
 						$html .= '</span>';
