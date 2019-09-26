@@ -26,11 +26,20 @@ if ( ! class_exists( 'CX_Control_Wysiwyg' ) ) {
 			'name'        => 'cx-ui-wysiwyg-name',
 			'value'       => '',
 			'placeholder' => '',
-			'rows'        => '10',
+			'rows'        => '20',
 			'cols'        => '20',
 			'label'       => '',
 			'class'       => '',
 		);
+
+		/**
+		 * Register control dependencies
+		 *
+		 * @return void
+		 */
+		public function register_depends() {
+			wp_enqueue_editor();
+		}
 
 		/**
 		 * Render html UI_Textarea.
@@ -51,13 +60,31 @@ if ( ! class_exists( 'CX_Control_Wysiwyg' ) ) {
 				$editor_id  = str_replace( array( '_', '-' ), '', strtolower( $this->settings['id'] ) );
 				$editor_id .= $this->get_rand_str();
 
-				ob_start();
-				wp_editor( $this->settings['value'], $editor_id, array(
-					'textarea_name' => esc_attr( $this->settings['name'] ),
-					'textarea_rows' => esc_attr( $this->settings['cols'] ),
-				) );
+				if ( '' !== $this->settings['label'] ) {
+					$html .= '<label class="cx-label" for="' . esc_attr( $editor_id )  .'">' . $this->settings['label'] . '</label>';
+				}
 
-				$html .= ob_get_clean();
+				$in_repeater = false !== strpos( $editor_id, '{{{data.index}}}' ) ? true : false;
+
+				if ( $in_repeater ) {
+
+					$html .= sprintf( '<textarea id="%1$s" class="cx-ui-wysiwyg wp-editor-area" name="%2$s" rows="%3$s">%4$s</textarea>',
+						esc_attr( $editor_id ),
+						esc_attr( $this->settings['name'] ),
+						esc_attr( $this->settings['rows'] ),
+						esc_textarea( $this->settings['value'] )
+					);
+
+				} else {
+					ob_start();
+
+					wp_editor( $this->settings['value'], $editor_id, array(
+						'textarea_name' => esc_attr( $this->settings['name'] ),
+						'textarea_rows' => esc_attr( $this->settings['rows'] ),
+					) );
+
+					$html .= ob_get_clean();
+				}
 
 			$html .= '</div>';
 

@@ -341,6 +341,7 @@
 				this.colorpicker.init();
 				this.iconpicker.init();
 				this.dimensions.init();
+				this.wysiwyg.init();
 				this.repeater.init();
 			},
 
@@ -880,6 +881,49 @@
 					$( self.valuesInput, $container ).val( $this.val() )
 				}
 			},//End CX-Dimensions
+
+			// CX-Wysiwyg
+			wysiwyg: {
+
+				init: function() {
+					$( document )
+						.on( 'cx-control-init', this.render.bind( this ) );
+				},
+				render: function( event ) {
+					var target = ( event._target ) ? event._target : $( 'body' ),
+						textarea = $( 'textarea.cx-ui-wysiwyg:not([name*="__i__"])', target ),
+						editorSettings = {
+							tinymce: {
+								wpautop: true,
+								toolbar1: 'formatselect,bold,italic,bullist,numlist,blockquote,alignleft,aligncenter,alignright,link,wp_more,spellchecker,wp_adv,dfw',
+								toolbar2: 'strikethrough,hr,forecolor,pastetext,removeformat,charmap,outdent,indent,undo,redo,wp_help'
+							},
+							quicktags: {
+								buttons: 'strong,em,link,block,del,ins,img,ul,ol,li,code,more,close,dfw'
+							},
+							mediaButtons: true
+						};
+
+					if ( textarea[0] ) {
+						textarea.each( function() {
+							var $this = $( this ),
+								id    = $this.attr( 'id' );
+
+							if ( $this.data( 'init' ) ) {
+								return;
+							}
+
+							if ( typeof window.wp.editor.initialize !== 'undefined' ) {
+								window.wp.editor.initialize( id, editorSettings );
+							} else {
+								window.wp.oldEditor.initialize( id, editorSettings );
+							}
+
+							$this.data( 'init', true );
+						} );
+					}
+				}
+			},//End CX-Wysiwyg
 
 			// CX-Repeater
 			repeater: {
