@@ -155,6 +155,14 @@
 									}
 									break;
 								default :
+									if ( 'string' === typeof self.conditionState[ control ] ){
+										if ( 'true' === self.conditionState[ control ] ){
+											self.conditionState[ control ] = true;
+										}
+										if ( 'false' === self.conditionState[ control ] ){
+											self.conditionState[ control ] = false;
+										}
+									}
 									if ( -1 !== value.indexOf( self.conditionState[control] ) ) {
 										hidden = false;
 									}
