@@ -885,24 +885,29 @@
 			// CX-Wysiwyg
 			wysiwyg: {
 
+				editorSettings: {
+					tinymce: {
+						wpautop: true,
+						toolbar1: 'formatselect,bold,italic,bullist,numlist,blockquote,alignleft,aligncenter,alignright,link,wp_more,spellchecker,wp_adv,dfw',
+						toolbar2: 'strikethrough,hr,forecolor,pastetext,removeformat,charmap,outdent,indent,undo,redo,wp_help'
+					},
+					quicktags: {
+						buttons: 'strong,em,link,block,del,ins,img,ul,ol,li,code,more,close,dfw'
+					},
+					mediaButtons: true
+				},
+
 				init: function() {
 					$( document )
 						.on( 'cx-control-init', this.render.bind( this ) );
+
+					$( window )
+						.on( 'cx-repeater-sortable-stop', this.reInit.bind( this ) );
 				},
 				render: function( event ) {
-					var target = ( event._target ) ? event._target : $( 'body' ),
-						textarea = $( 'textarea.cx-ui-wysiwyg:not([name*="__i__"])', target ),
-						editorSettings = {
-							tinymce: {
-								wpautop: true,
-								toolbar1: 'formatselect,bold,italic,bullist,numlist,blockquote,alignleft,aligncenter,alignright,link,wp_more,spellchecker,wp_adv,dfw',
-								toolbar2: 'strikethrough,hr,forecolor,pastetext,removeformat,charmap,outdent,indent,undo,redo,wp_help'
-							},
-							quicktags: {
-								buttons: 'strong,em,link,block,del,ins,img,ul,ol,li,code,more,close,dfw'
-							},
-							mediaButtons: true
-						};
+					var self = this,
+						target = ( event._target ) ? event._target : $( 'body' ),
+						textarea = $( 'textarea.cx-ui-wysiwyg:not([name*="__i__"])', target );
 
 					if ( textarea[0] ) {
 						textarea.each( function() {
@@ -914,12 +919,32 @@
 							}
 
 							if ( typeof window.wp.editor.initialize !== 'undefined' ) {
-								window.wp.editor.initialize( id, editorSettings );
+								window.wp.editor.initialize( id, self.editorSettings );
 							} else {
-								window.wp.oldEditor.initialize( id, editorSettings );
+								window.wp.oldEditor.initialize( id, self.editorSettings );
 							}
 
 							$this.data( 'init', true );
+						} );
+					}
+				},
+				reInit: function( event ) {
+					var self = this,
+						target = event._item,
+						textarea = $( 'textarea.wp-editor-area', target );
+
+					if ( textarea[0] ) {
+						textarea.each( function() {
+							var $this = $( this ),
+								id    = $this.attr( 'id' );
+
+							if ( typeof window.wp.editor.initialize !== 'undefined' ) {
+								window.wp.editor.remove( id );
+								window.wp.editor.initialize( id, self.editorSettings );
+							} else {
+								window.wp.oldEditor.remove( id );
+								window.wp.oldEditor.initialize( id, self.editorSettings );
+							}
 						} );
 					}
 				}
@@ -1044,12 +1069,24 @@
 										} )
 										.end();
 								},
+								start:function( event, ui ){
+									$( window ).trigger( {
+										type: 'cx-repeater-sortable-start',
+										_item: ui.item
+									} );
+								},
+								stop:function( event, ui ){
+									$( window ).trigger( {
+										type: 'cx-repeater-sortable-stop',
+										_item: ui.item
+									} );
+								},
 								opacity: 0.65,
 								placeholder: self.sortablePlaceholderClass,
 								create: function() {
 									$this.data( 'sortable-init', true );
 								},
-								update: function( event ) {
+								update: function( event, ui ) {
 									var target = $( event.target );
 
 									self.applyChanges( target );
