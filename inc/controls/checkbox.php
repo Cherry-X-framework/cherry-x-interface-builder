@@ -35,6 +35,8 @@ if ( ! class_exists( 'CX_Control_Checkbox' ) ) {
 				'checkbox-2' => 'checkbox 2',
 				'checkbox-3' => 'checkbox 3',
 			),
+			'allow_custom_value' => false,
+			'add_button_label'   => 'Add custom value',
 			'label'  => '',
 			'class'  => '',
 		);
@@ -95,6 +97,36 @@ if ( ! class_exists( 'CX_Control_Checkbox' ) ) {
 					$html .= '</div>';
 
 					$counter++;
+				}
+
+				if ( $this->settings['allow_custom_value'] ) {
+
+					if ( ! empty( $this->settings['value'] ) ) {
+						$custom_options = array_diff( array_keys( $this->settings['value'] ), array_keys( $this->settings['options'] ) );
+
+						if ( ! empty( $custom_options ) ) {
+							foreach ( $custom_options as $custom_option ) {
+								$custom_item_value = filter_var( $this->settings['value'][ $custom_option ], FILTER_VALIDATE_BOOLEAN );
+
+								if ( ! $custom_item_value ) {
+									continue;
+								}
+
+								$html .= '<div class="cx-checkbox-item-wrap">';
+									$html .= '<span class="cx-label-content">';
+										$html .= '<input type="hidden" class="cx-checkbox-input" name="' . esc_attr( $this->settings['name'] ) . '[' . $custom_option . ']" checked value="true">';
+										$html .= '<span class="cx-checkbox-item"><span class="marker dashicons dashicons-yes"></span></span>';
+										$html .= '<input type="text" class="cx-checkbox-custom-value" value="' . esc_attr( $custom_option ) . '">';
+									$html .= '</span>';
+								$html .= '</div>';
+							}
+						}
+					}
+
+					$html .= sprintf(
+						'<a href="#" class="cx-checkbox-add-button">%1$s</a>',
+						esc_html( $this->settings['add_button_label'] )
+					);
 				}
 			}
 

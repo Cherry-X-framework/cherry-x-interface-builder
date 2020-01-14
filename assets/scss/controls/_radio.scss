@@ -9,7 +9,8 @@ input.cx-radio-input{
 	}
 
 	label {
-		display: inline-block;
+		display: inline-flex;
+		align-items: center;
 		font-size: 12px;
 		line-height: 14px;
 		color: $dark_color_1;
@@ -20,12 +21,18 @@ input.cx-radio-input{
 		height: 16px;
 		border-radius: 25px;
 		margin-right: 10px;
+		margin-bottom: 0;
 		cursor: pointer;
 		position: relative;
 		background-color: white;
 		display: inline-block;
 		float: left;
 		box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.2);
+
+		.rtl & {
+			margin-left: 10px;
+			margin-right: 0;
+		}
 
 		i {
 			width: 8px;
@@ -41,14 +48,18 @@ input.cx-radio-input{
 }
 
 .cx-radio-item {
-	.cx-radio-input:checked{
-		& + label{
-			span{
-				i{
-					transform: scale(1);
-				}
+	.cx-radio-input:checked {
+		& + label .cx-radio-item,
+		& + .cx-radio-item {
+			i {
+				transform: scale(1);
 			}
 		}
+	}
+
+	.cx-radio-input:not(:checked) ~ .cx-radio-custom-value {
+		background-color: #eee;
+		pointer-events: none;
 	}
 }
 

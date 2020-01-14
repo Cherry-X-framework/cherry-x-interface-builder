@@ -47,6 +47,7 @@ if ( ! class_exists( 'CX_Control_Radio' ) ) {
 					'img_src' => '',
 				),
 			),
+			'allow_custom_value' => false,
 			'label'  => '',
 			'class'  => '',
 		);
@@ -88,6 +89,19 @@ if ( ! class_exists( 'CX_Control_Radio' ) ) {
 							$html .= '<label for="' . esc_attr( $radio_id ) . '"><span class="cx-lable-content">' . $label_content . '</span></label> ';
 							$html .= '</div>';
 						}
+
+						if ( $this->settings['allow_custom_value'] ) {
+
+							$custom_value = ! in_array( $this->settings['value'], array_keys( $this->settings['options'] ) ) ? $this->settings['value'] : '';
+
+							$html .= '<div class="cx-radio-item">';
+								$html .= '<label>';
+									$html .= '<input type="radio" class="cx-radio-input" name="' . esc_attr( $this->settings['name'] ) . '"' . checked( $custom_value, $this->settings['value'], false ) . ' value="' . esc_attr( $custom_value ) . '" ' . $this->get_required() . '/>';
+									$html .= '<span class="cx-radio-item"><i></i></span><input type="text" class="cx-radio-custom-value" value="' . esc_attr( $custom_value ) . '">';
+								$html .= '</label>';
+							$html .= '</div>';
+						}
+
 						$html .= '<div class="clear"></div>';
 					$html .= '</div>';
 				}

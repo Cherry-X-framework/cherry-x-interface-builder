@@ -389,19 +389,29 @@
 			checkbox: {
 				inputClass: '.cx-checkbox-input[type="hidden"]:not([name*="__i__"])',
 				itemClass: '.cx-checkbox-label, .cx-checkbox-item',
+				addButtonClass: '.cx-checkbox-add-button',
+				customValueInputClass: '.cx-checkbox-custom-value',
 
 				init: function() {
-					$( 'body' ).on( 'click.cxCheckbox', this.itemClass, this.switchState.bind( this ) );
+					$( 'body' )
+						.on( 'click.cxCheckbox', this.itemClass, this.switchState.bind( this ) )
+						.on( 'click.cxCheckbox', this.addButtonClass, this.addCustomCheckbox.bind( this ) )
+						.on( 'input.cxCheckbox', this.customValueInputClass, this.updateCustomValue.bind( this ) );
 				},
 
 				switchState: function( event ) {
-					var $_input    = $( event.currentTarget ).siblings( this.inputClass ),
-						status     = $_input[0].checked,
-						$parent    = $( event.currentTarget ).closest( '.cx-control-checkbox' ),
-						name       = $parent.data( 'control-name' ),
-						statusData = {};
+					var $_input           = $( event.currentTarget ).siblings( this.inputClass ),
+						$customValueInput = $( event.currentTarget ).siblings( this.customValueInputClass ),
+						status            = $_input[0].checked,
+						$parent           = $( event.currentTarget ).closest( '.cx-control-checkbox' ),
+						name              = $parent.data( 'control-name' ),
+						statusData        = {};
 
 					$_input.val( ! status ? 'true' : 'false' ).attr( 'checked', ! status ? true : false );
+
+					if ( $customValueInput[0] ) {
+						$customValueInput.attr( 'readonly', status );
+					}
 
 					statusData = cxInterfaceBuilder.utils.serializeObject( $parent );
 
@@ -410,27 +420,68 @@
 						controlName: name,
 						controlStatus: statusData
 					} );
+				},
+				addCustomCheckbox: function( event ) {
+					var $addButton = $( event.currentTarget ),
+						html;
+
+					event.preventDefault();
+
+					html = '<div class="cx-checkbox-item-wrap">';
+						html += '<span class="cx-label-content">';
+							html += '<input type="hidden" class="cx-checkbox-input" checked value="true">';
+							html += '<span class="cx-checkbox-item"><span class="marker dashicons dashicons-yes"></span></span>';
+							html += '<input type="text" class="cx-checkbox-custom-value">';
+						html += '</span>';
+					html += '</div>';
+
+					$addButton.before( html );
+				},
+				updateCustomValue: function( event ) {
+					var $this   = $( event.currentTarget ),
+						value   = $this.val(),
+						$_input = $this.siblings( this.inputClass ),
+						$parent = $this.closest( '.cx-control-checkbox' ),
+						name    = $parent.data( 'control-name' );
+
+					$_input.attr( 'name', value ? name + '[' + value + ']' : '' );
 				}
 			},//End CX-Checkbox
 
 			// CX-Radio
 			radio: {
 				inputClass: '.cx-radio-input:not([name*="__i__"])',
+				customValueInputClass: '.cx-radio-custom-value',
 
 				init: function() {
-					$( 'body' ).on( 'click.cxRadio', this.inputClass, this.switchState.bind( this ) );
+					$( 'body' )
+						.on( 'click.cxRadio', this.inputClass, this.switchState.bind( this ) )
+						.on( 'input.cxRadio', this.customValueInputClass, this.updateCustomValue.bind( this ) );
 				},
 
 				switchState: function( event ) {
-					var $this   = $( event.currentTarget ),
-						$parent = $( event.currentTarget ).closest( '.cx-control-radio' ),
-						name    = $parent.data( 'control-name' );
+					var $this             = $( event.currentTarget ),
+						$parent           = $( event.currentTarget ).closest( '.cx-control-radio' ),
+						$customValueInput = $( event.currentTarget ).siblings( this.customValueInputClass ),
+						name              = $parent.data( 'control-name' );
+
+					if ( $customValueInput[0] ) {
+						$customValueInput.focus();
+					}
 
 					$( window ).trigger( {
 						type: 'cx-radio-change',
 						controlName: name,
 						controlStatus: $( $this ).val()
 					} );
+				},
+
+				updateCustomValue: function( event ) {
+					var $this   = $( event.currentTarget ),
+						value   = $this.val(),
+						$_input = $this.siblings( this.inputClass );
+
+					$_input.attr( 'value', value );
 				}
 			},//End CX-Radio
 
