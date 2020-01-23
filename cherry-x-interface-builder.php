@@ -2,7 +2,7 @@
 /**
  * Interface Builder module
  *
- * Version: 1.6.0
+ * Version: 1.6.1
  */
 
 // If this file is called directly, abort.
