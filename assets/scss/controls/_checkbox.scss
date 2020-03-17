@@ -51,6 +51,10 @@
 			}
 		}
 	}
+
+	&:not([checked]) ~ .cx-checkbox-label .cx-checkbox-custom-value {
+		pointer-events: none;
+	}
 }
 .cx-checkbox-label{
 	font-size: 12px;

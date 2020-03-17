@@ -401,17 +401,17 @@
 
 				switchState: function( event ) {
 					var $_input           = $( event.currentTarget ).siblings( this.inputClass ),
-						$customValueInput = $( event.currentTarget ).siblings( this.customValueInputClass ),
+						$customValueInput = $( event.target ).closest( this.customValueInputClass ),
 						status            = $_input[0].checked,
 						$parent           = $( event.currentTarget ).closest( '.cx-control-checkbox' ),
 						name              = $parent.data( 'control-name' ),
 						statusData        = {};
 
-					$_input.val( ! status ? 'true' : 'false' ).attr( 'checked', ! status ? true : false );
-
 					if ( $customValueInput[0] ) {
-						$customValueInput.attr( 'readonly', status );
+						return;
 					}
+
+					$_input.val( ! status ? 'true' : 'false' ).attr( 'checked', ! status ? true : false );
 
 					statusData = cxInterfaceBuilder.utils.serializeObject( $parent );
 
@@ -431,7 +431,7 @@
 						html += '<span class="cx-label-content">';
 							html += '<input type="hidden" class="cx-checkbox-input" checked value="true">';
 							html += '<span class="cx-checkbox-item"><span class="marker dashicons dashicons-yes"></span></span>';
-							html += '<input type="text" class="cx-checkbox-custom-value">';
+							html += '<label class="cx-checkbox-label"><input type="text" class="cx-checkbox-custom-value cx-ui-text"></label>';
 						html += '</span>';
 					html += '</div>';
 
@@ -440,7 +440,8 @@
 				updateCustomValue: function( event ) {
 					var $this   = $( event.currentTarget ),
 						value   = $this.val(),
-						$_input = $this.siblings( this.inputClass ),
+						$label  = $this.closest( '.cx-checkbox-label' ),
+						$_input = $label.siblings( this.inputClass ),
 						$parent = $this.closest( '.cx-control-checkbox' ),
 						name    = $parent.data( 'control-name' );
 

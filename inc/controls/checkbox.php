@@ -116,7 +116,7 @@ if ( ! class_exists( 'CX_Control_Checkbox' ) ) {
 									$html .= '<span class="cx-label-content">';
 										$html .= '<input type="hidden" class="cx-checkbox-input" name="' . esc_attr( $this->settings['name'] ) . '[' . $custom_option . ']" checked value="true">';
 										$html .= '<span class="cx-checkbox-item"><span class="marker dashicons dashicons-yes"></span></span>';
-										$html .= '<input type="text" class="cx-checkbox-custom-value" value="' . esc_attr( $custom_option ) . '">';
+										$html .= '<label class="cx-checkbox-label"><input type="text" class="cx-checkbox-custom-value cx-ui-text" value="' . esc_attr( $custom_option ) . '"></label>';
 									$html .= '</span>';
 								$html .= '</div>';
 							}

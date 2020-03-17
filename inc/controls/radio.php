@@ -98,7 +98,7 @@ if ( ! class_exists( 'CX_Control_Radio' ) ) {
 							$html .= '<div class="cx-radio-item">';
 								$html .= '<label>';
 									$html .= '<input type="radio" class="cx-radio-input" name="' . esc_attr( $this->settings['name'] ) . '"' . $checked . ' value="' . esc_attr( $custom_value ) . '" ' . $this->get_required() . '/>';
-									$html .= '<span class="cx-radio-item"><i></i></span><input type="text" class="cx-radio-custom-value" value="' . esc_attr( $custom_value ) . '">';
+									$html .= '<span class="cx-radio-item"><i></i></span><input type="text" class="cx-radio-custom-value cx-ui-text" value="' . esc_attr( $custom_value ) . '">';
 								$html .= '</label>';
 							$html .= '</div>';
 						}

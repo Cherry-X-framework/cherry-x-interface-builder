@@ -58,7 +58,6 @@ input.cx-radio-input{
 	}
 
 	.cx-radio-input:not(:checked) ~ .cx-radio-custom-value {
-		background-color: #eee;
 		pointer-events: none;
 	}
 }
