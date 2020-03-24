@@ -191,5 +191,15 @@ if ( ! class_exists( 'CX_Controls_Base' ) ) {
 			return implode( ' ', $result );
 
 		}
+
+		/**
+		 * Checks a value for being empty.
+		 *
+		 * @param  mixed $source
+		 * @return bool
+		 */
+		public function empty( $source ) {
+			return empty( $source ) && '0' !== $source;
+		}
 	}
 }

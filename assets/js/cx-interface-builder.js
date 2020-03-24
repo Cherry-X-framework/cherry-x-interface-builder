@@ -1208,7 +1208,7 @@
 					json = {},
 					pushCounters = {},
 					patterns = {
-						'validate': /^[a-zA-Z][a-zA-Z0-9_-]*(?:\[(?:\d*|[a-zA-Z0-9_-]+)\])*$/,
+						'validate': /^[a-zA-Z_][a-zA-Z0-9_-]*(?:\[(?:\d*|[a-zA-Z0-9_-]+)\])*$/,
 						'key':      /[a-zA-Z0-9_-]+|(?=\[\])/g,
 						'push':     /^$/,
 						'fixed':    /^\d+$/,
@@ -1257,7 +1257,7 @@
 						if ( k.match( patterns.push ) ) {
 							merge = self.build( [], self.push_counter( reverseKey ), merge );
 						} else if ( k.match( patterns.fixed ) ) {
-							merge = self.build( [], k, merge );
+							merge = self.build( {}, k, merge );
 						} else if ( k.match( patterns.named ) ) {
 							merge = self.build( {}, k, merge );
 						}

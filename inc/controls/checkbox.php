@@ -77,14 +77,14 @@ if ( ! class_exists( 'CX_Control_Checkbox' ) ) {
 				foreach ( $this->settings['options'] as $option => $option_value ) {
 
 					if ( ! empty( $this->settings['value'] ) ) {
-						$option_checked = array_key_exists( $option, $this->settings['value'] ) ? $option : '';
-						$item_value     = ! empty( $option_checked ) ? $this->settings['value'][ $option ] : 'false';
+						$option_checked = array_key_exists( $option, $this->settings['value'] ) ? strval( $option ) : '';
+						$item_value     = ! $this->empty( $option_checked ) ? $this->settings['value'][ $option ] : 'false';
 					} else {
 						$option_checked = '';
 						$item_value     = 'false';
 					}
 
-					$checked      = ( ! empty( $option_checked ) && filter_var( $item_value, FILTER_VALIDATE_BOOLEAN ) ) ? 'checked' : '';
+					$checked      = ( ! $this->empty( $option_checked ) && filter_var( $item_value, FILTER_VALIDATE_BOOLEAN ) ) ? 'checked' : '';
 					$item_value   = filter_var( $item_value, FILTER_VALIDATE_BOOLEAN ) ? 'true' : 'false';
 					$option_label = isset( $option_value ) && is_array( $option_value ) ? $option_value['label'] : $option_value;
 
