@@ -389,6 +389,7 @@
 			checkbox: {
 				inputClass: '.cx-checkbox-input[type="hidden"]:not([name*="__i__"])',
 				itemClass: '.cx-checkbox-label, .cx-checkbox-item',
+				itemWrapClass: '.cx-checkbox-item-wrap',
 				addButtonClass: '.cx-checkbox-add-button',
 				customValueInputClass: '.cx-checkbox-custom-value',
 
@@ -397,6 +398,8 @@
 						.on( 'click.cxCheckbox', this.itemClass, this.switchState.bind( this ) )
 						.on( 'click.cxCheckbox', this.addButtonClass, this.addCustomCheckbox.bind( this ) )
 						.on( 'input.cxCheckbox', this.customValueInputClass, this.updateCustomValue.bind( this ) );
+
+					this.resetOnEditTagsPage();
 				},
 
 				switchState: function( event ) {
@@ -446,6 +449,53 @@
 						name    = $parent.data( 'control-name' );
 
 					$_input.attr( 'name', value ? name + '[' + value + ']' : '' );
+				},
+				resetOnEditTagsPage: function() {
+					var self = this;
+
+					if ( -1 === window.location.href.indexOf( 'edit-tags.php' ) ) {
+						return;
+					}
+
+					var $input = $( self.inputClass ),
+						defaultCheckInputs = [];
+
+					if ( !$input[0] ) {
+						return;
+					}
+
+					$input.each( function() {
+						if ( 'true' !== $( this ).val() ) {
+							return;
+						}
+
+						defaultCheckInputs.push( $( this ).attr( 'name' ) );
+					} );
+
+					$( document ).ajaxComplete( function( event, xhr, settings ) {
+
+						if ( -1 === settings.data.indexOf( 'action=add-tag' ) ) {
+							return;
+						}
+
+						if ( -1 !== xhr.responseText.indexOf( 'wp_error' ) ) {
+							return;
+						}
+
+						var $customFields = $( self.customValueInputClass );
+
+						if ( $customFields[0] ) {
+							$customFields.closest( self.itemWrapClass ).remove();
+						}
+
+						$input.each( function() {
+							if ( -1 !== defaultCheckInputs.indexOf( $( this ).attr( 'name' ) ) ) {
+								$( this ).val( 'true' ).attr( 'checked', true );
+							} else {
+								$( this ).val( 'false' ).attr( 'checked', false );
+							}
+						} );
+					} );
 				}
 			},//End CX-Checkbox
 
@@ -458,6 +508,8 @@
 					$( 'body' )
 						.on( 'click.cxRadio', this.inputClass, this.switchState.bind( this ) )
 						.on( 'input.cxRadio', this.customValueInputClass, this.updateCustomValue.bind( this ) );
+
+					this.resetOnEditTagsPage();
 				},
 
 				switchState: function( event ) {
@@ -483,6 +535,51 @@
 						$_input = $this.siblings( this.inputClass );
 
 					$_input.attr( 'value', value );
+				},
+				resetOnEditTagsPage: function() {
+					var self = this;
+
+					if ( -1 === window.location.href.indexOf( 'edit-tags.php' ) ) {
+						return;
+					}
+
+					var $input = $( self.inputClass ),
+						defaultCheckInputs = [];
+
+					if ( !$input[0] ) {
+						return;
+					}
+
+					$input.each( function() {
+						if ( ! $( this ).prop( 'checked' ) ) {
+							return;
+						}
+
+						defaultCheckInputs.push( $( this ).attr( 'name' ) + '[' + $( this ).val() + ']' );
+					} );
+
+					$( document ).ajaxComplete( function( event, xhr, settings ) {
+
+						if ( -1 === settings.data.indexOf( 'action=add-tag' ) ) {
+							return;
+						}
+
+						if ( -1 !== xhr.responseText.indexOf( 'wp_error' ) ) {
+							return;
+						}
+
+						var $customFields = $( self.customValueInputClass );
+
+						if ( $customFields[0] ) {
+							$customFields.siblings( self.inputClass ).val( '' );
+						}
+
+						$input.each( function() {
+							if ( -1 !== defaultCheckInputs.indexOf( $( this ).attr( 'name' ) + '[' + $( this ).val() + ']' ) ) {
+								$( this ).prop( 'checked', true );
+							}
+						} );
+					} );
 				}
 			},//End CX-Radio
 
