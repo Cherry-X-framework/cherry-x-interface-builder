@@ -198,7 +198,7 @@ if ( ! class_exists( 'CX_Controls_Base' ) ) {
 		 * @param  mixed $source
 		 * @return bool
 		 */
-		public function empty( $source ) {
+		public function is_empty( $source ) {
 			return empty( $source ) && '0' !== $source;
 		}
 	}

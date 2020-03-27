@@ -78,13 +78,13 @@ if ( ! class_exists( 'CX_Control_Checkbox' ) ) {
 
 					if ( ! empty( $this->settings['value'] ) ) {
 						$option_checked = array_key_exists( $option, $this->settings['value'] ) ? strval( $option ) : '';
-						$item_value     = ! $this->empty( $option_checked ) ? $this->settings['value'][ $option ] : 'false';
+						$item_value     = ! $this->is_empty( $option_checked ) ? $this->settings['value'][ $option ] : 'false';
 					} else {
 						$option_checked = '';
 						$item_value     = 'false';
 					}
 
-					$checked      = ( ! $this->empty( $option_checked ) && filter_var( $item_value, FILTER_VALIDATE_BOOLEAN ) ) ? 'checked' : '';
+					$checked      = ( ! $this->is_empty( $option_checked ) && filter_var( $item_value, FILTER_VALIDATE_BOOLEAN ) ) ? 'checked' : '';
 					$item_value   = filter_var( $item_value, FILTER_VALIDATE_BOOLEAN ) ? 'true' : 'false';
 					$option_label = isset( $option_value ) && is_array( $option_value ) ? $option_value['label'] : $option_value;
 

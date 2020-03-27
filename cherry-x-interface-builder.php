@@ -42,7 +42,7 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 		 *
 		 * @var string
 		 */
-		protected $version = '1.6.1';
+		protected $version = '1.6.2';
 
 		/**
 		 * Conditions

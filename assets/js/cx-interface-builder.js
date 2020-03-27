@@ -416,6 +416,10 @@
 
 					$_input.val( ! status ? 'true' : 'false' ).attr( 'checked', ! status ? true : false );
 
+					if ( !$parent[0] ) {
+						return;
+					}
+
 					statusData = cxInterfaceBuilder.utils.serializeObject( $parent );
 
 					$( window ).trigger( {
@@ -577,6 +581,8 @@
 						$input.each( function() {
 							if ( -1 !== defaultCheckInputs.indexOf( $( this ).attr( 'name' ) + '[' + $( this ).val() + ']' ) ) {
 								$( this ).prop( 'checked', true );
+							} else {
+								$( this ).prop( 'checked', false );
 							}
 						} );
 					} );
@@ -594,12 +600,13 @@
 						$thisVal         = $this.val(),
 						$sliderWrapper   = $this.closest( '.cx-slider-wrap' ),
 						$sliderContainer = $this.closest( '.cx-ui-container' ),
-						$sliderSettings  = $sliderContainer.data( 'settings' ),
+						$sliderSettings  = $sliderContainer.data( 'settings' ) || {},
+						rangeLabel       = $sliderSettings['range_label'] || false,
 						targetClass      = ( ! $this.hasClass( 'cx-slider-unit' ) ) ? '.cx-slider-unit' : '.cx-ui-stepper-input';
 
 					$( targetClass, $sliderWrapper ).val( $thisVal );
 
-					if ( $sliderSettings['range_label'] ) {
+					if ( rangeLabel ) {
 						var $rangeLabel = $( '.cx-slider-range-label', $sliderWrapper ),
 							rangeLabels = $sliderSettings['range_labels'];
 
