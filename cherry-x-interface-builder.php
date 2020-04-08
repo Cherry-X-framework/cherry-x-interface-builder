@@ -422,7 +422,8 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 			$sorted_structure = $this->sort_structure( $args );
 
 			$output = $this->build( $sorted_structure );
-			$output = str_replace( array( "\r\n", "\r", "\n", "\t" ), '', $output );
+			//$output = str_replace( array( "\r\n", "\r", "\n", "\t" ), '', $output );
+			$output = str_replace( array( "\t" ), '', $output );
 
 			$this->reset_structure();
 
