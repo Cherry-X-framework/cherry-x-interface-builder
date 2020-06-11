@@ -219,6 +219,7 @@ if ( ! class_exists( 'CX_Control_Repeater' ) ) {
 
 				$field_classes = array(
 					$field['id'] . '-wrap',
+					'cx-ui-repeater-item-control'
 				);
 
 				if ( ! empty( $field['class'] ) ) {

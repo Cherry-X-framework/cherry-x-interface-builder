@@ -20,8 +20,7 @@ input.cx-radio-input{
 		width: 16px;
 		height: 16px;
 		border-radius: 25px;
-		margin-right: 10px;
-		margin-bottom: 0;
+		margin: 0 10px 0 0;
 		cursor: pointer;
 		position: relative;
 		background-color: white;
@@ -30,8 +29,8 @@ input.cx-radio-input{
 		box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.2);
 
 		.rtl & {
-			margin-left: 10px;
-			margin-right: 0;
+			float: right;
+			margin: 0 0 0 10px;
 		}
 
 		i {
@@ -69,6 +68,9 @@ input.cx-radio-input{
 	max-width: 60px;
 	font-size: 12px;
 	position: relative;
+	.rtl & {
+		float: right;
+	}
 
 	.cx-lable-content {
 		display: flex;

@@ -98,19 +98,26 @@ if ( ! class_exists( 'CX_Control_Media' ) ) {
 									$tmp         = wp_get_attachment_metadata( $medias_value );
 									$img_src     = '';
 									$thumb       = '';
+									$thumb_type  = 'icon';
 
 									switch ( $mime_type ) {
 										case 'image/jpeg':
 										case 'image/png':
 										case 'image/gif':
-											$img_src = wp_get_attachment_image_src( $medias_value, 'thumbnail' );
-											$img_src = $img_src[0];
-											$thumb   = '<img  src="' . esc_html( $img_src ) . '" alt="">';
-										break;
+										case 'image/svg+xml':
+											$img_src    = wp_get_attachment_image_src( $medias_value, 'thumbnail' );
+											$img_src    = $img_src[0];
+											$thumb      = '<img  src="' . esc_html( $img_src ) . '" alt="">';
+											$thumb_type = 'image';
+											break;
+
+										case 'application/pdf':
+											$thumb = '<span class="dashicons dashicons-media-document"></span>';
+											break;
 
 										case 'image/x-icon':
 											$thumb = '<span class="dashicons dashicons-format-image"></span>';
-										break;
+											break;
 
 										case 'video/mpeg':
 										case 'video/mp4':
@@ -118,15 +125,15 @@ if ( ! class_exists( 'CX_Control_Media' ) ) {
 										case 'video/webm':
 										case 'video/ogg':
 											$thumb = '<span class="dashicons dashicons-format-video"></span>';
-										break;
+											break;
 
 										case 'audio/mpeg':
 										case 'audio/wav':
 										case 'audio/ogg':
 											$thumb = '<span class="dashicons dashicons-format-audio"></span>';
-										break;
+											break;
 									}
-									$html .= '<div class="cx-image-wrap">';
+									$html .= '<div class="cx-image-wrap cx-image-wrap--' . esc_attr( $thumb_type ) . '">';
 										$html .= '<div class="inner">';
 											$html .= '<div class="preview-holder" data-id-attr="' . esc_attr( $medias_value ) . '">';
 												$html .= '<div class="centered">';

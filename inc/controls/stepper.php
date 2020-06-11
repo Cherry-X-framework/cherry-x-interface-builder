@@ -31,9 +31,9 @@ if ( ! class_exists( 'CX_Control_Stepper' ) ) {
 		public $defaults_settings = array(
 			'id'          => 'cx-ui-stepper-id',
 			'name'        => 'cx-ui-stepper-name',
-			'value'       => '0',
-			'max_value'   => '100',
-			'min_value'   => '0',
+			'value'       => '',
+			'max_value'   => '',
+			'min_value'   => '',
 			'step_value'  => '1',
 			'label'       => '',
 			'class'       => '',

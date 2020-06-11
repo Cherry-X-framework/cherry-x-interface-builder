@@ -71,6 +71,10 @@
 			outline: none;
 			top: 13px;
 			left: 18px;
+			.rtl & {
+				left: auto;
+				right: 18px;
+			}
 			&:before {
 				content: "\f142";
 				transition: all 200ms linear;
@@ -96,6 +100,10 @@
 			outline: none;
 			top: 13px;
 			right: 18px;
+			.rtl & {
+				left: 18px;
+				right: auto;
+			}
 			&:before {
 				content: "\f158";
 				transition: all 200ms linear;
@@ -119,6 +127,10 @@
 				box-shadow: none;
 			}
 		}
+		&-item-control +  .cx-ui-repeater-item-control {
+			margin-top: 10px;
+		}
+
 	}
 
 	.cx-ui-repeater-min {

@@ -107,9 +107,21 @@
 					self.renderConditionRules();
 				});
 
+				$( window ).on( 'cx-control-change', function( event ) {
+					var controlName   = event.controlName,
+						controlStatus = event.controlStatus;
+
+					self.updateConditionRules( controlName, controlStatus );
+					self.renderConditionRules();
+				});
+
 				this.generateConditionRules();
 				self.renderConditionRules();
 
+			},
+
+			getControlNameParts: function( controlName ) {
+				return controlName.match(/([a-zA-Z0-9_-]+)?(!?)$/i);
 			},
 
 			generateConditionRules: function() {
@@ -117,6 +129,11 @@
 
 				$.each( this.controlConditions, function( control, conditions ) {
 					$.each( conditions, function( control, value ) {
+
+						var controlNameParts = self.getControlNameParts( control );
+
+						control = controlNameParts[1];
+
 						if ( self.controlValues.hasOwnProperty( control ) ) {
 							self.conditionState[ control ] = self.controlValues[ control ];
 						}
@@ -140,12 +157,18 @@
 					$.each( conditions, function( control, value ) {
 						hidden = true;
 
+						var controlNameParts = self.getControlNameParts( control ),
+							isNegativeCondition;
+
+						control = controlNameParts[1];
+						isNegativeCondition = !!controlNameParts[2];
+
 						if ( self.conditionState.hasOwnProperty( control ) ) {
 							var type = typeof value;
 
 							switch ( type ) {
 								case 'string':
-									if ( self.conditionState[control] === value ) {
+									if ( self.conditionState[control].toString() === value ) {
 										hidden = false;
 									}
 									break;
@@ -169,19 +192,34 @@
 									break;
 							}
 
-							if ( 'object' === typeof self.conditionState[ control ] ) {
-								hidden = false;
+							if ( $.isArray( self.conditionState[ control ] ) ) { // for Select-2 control
+
+								$.each( self.conditionState[ control ], function( index, val ) {
+
+									if ( val && -1 !== value.indexOf( val ) ) {
+
+										hidden = false;
+
+										return false;
+									}
+								} );
+
+							} else if ( 'object' === typeof self.conditionState[ control ] ) { // for Checkboxes control
 
 								$.each( self.conditionState[ control ], function( prop, val ) {
 
-									if ( ! val && -1 !== value.indexOf( prop ) ) {
-										hidden = true;
+									if ( cxInterfaceBuilder.utils.filterBoolValue( val ) && -1 !== value.indexOf( prop ) ) {
+
+										hidden = false;
 
 										return false;
 									}
 								} );
 							}
+						}
 
+						if ( isNegativeCondition ) {
+							hidden = ! hidden;
 						}
 
 						if ( hidden ) {
@@ -351,6 +389,7 @@
 				this.dimensions.init();
 				this.wysiwyg.init();
 				this.repeater.init();
+				this.text.init();
 			},
 
 			// CX-Switcher
@@ -601,10 +640,20 @@
 						$sliderWrapper   = $this.closest( '.cx-slider-wrap' ),
 						$sliderContainer = $this.closest( '.cx-ui-container' ),
 						$sliderSettings  = $sliderContainer.data( 'settings' ) || {},
+						$stepperInput    = $( '.cx-ui-stepper-input', $sliderContainer ),
+						controlName      = $stepperInput.attr( 'name' ),
 						rangeLabel       = $sliderSettings['range_label'] || false,
 						targetClass      = ( ! $this.hasClass( 'cx-slider-unit' ) ) ? '.cx-slider-unit' : '.cx-ui-stepper-input';
 
 					$( targetClass, $sliderWrapper ).val( $thisVal );
+
+					if ( controlName ) {
+						$( window ).trigger( {
+							type: 'cx-control-change',
+							controlName: controlName,
+							controlStatus: $thisVal
+						} );
+					}
 
 					if ( rangeLabel ) {
 						var $rangeLabel = $( '.cx-slider-range-label', $sliderWrapper ),
@@ -769,16 +818,22 @@
 											return_data = img_data.id,
 											mimeType    = img_data.mime,
 											img_src     = '',
-											thumb       = '';
+											thumb       = '',
+											thumb_type  = 'icon';
 
 											switch (mimeType) {
 												case 'image/jpeg':
 												case 'image/png':
 												case 'image/gif':
+												case 'image/svg+xml':
 														if ( img_data.sizes !== undefined ) {
 															img_src = img_data.sizes.thumbnail ? img_data.sizes.thumbnail.url : img_data.sizes.full.url;
 														}
 														thumb = '<img  src="' + img_src + '" alt="" data-img-attr="' + return_data + '">';
+														thumb_type  = 'image';
+													break;
+												case 'application/pdf':
+													thumb = '<span class="dashicons dashicons-media-document"></span>';
 													break;
 												case 'image/x-icon':
 														thumb = '<span class="dashicons dashicons-format-image"></span>';
@@ -797,7 +852,7 @@
 													break;
 											}
 
-											new_img += '<div class="cx-image-wrap">'+
+											new_img += '<div class="cx-image-wrap cx-image-wrap--'+ thumb_type +'">'+
 														'<div class="inner">'+
 															'<div class="preview-holder"  data-id-attr="' + return_data +'"><div class="centered">' + thumb + '</div></div>'+
 															'<a class="cx-remove-image" href="#"><i class="dashicons dashicons-no"></i></a>'+
@@ -868,6 +923,8 @@
 
 			// CX-Colorpicker
 			colorpicker: {
+				inputClass: 'input.cx-ui-colorpicker:not([name*="__i__"])',
+
 				init: function() {
 					$( document )
 						.on( 'ready.cxColorpicker', this.render.bind( this ) )
@@ -876,11 +933,30 @@
 
 				render: function( event ) {
 					var target = ( event._target ) ? event._target : $( 'body' ),
-						input = $( 'input.cx-ui-colorpicker:not([name*="__i__"])', target );
+						input = $( this.inputClass, target );
 
 					if ( input[0] ) {
-						input.wpColorPicker();
+						input.wpColorPicker( {
+							change: this.changeHandler
+						} );
 					}
+				},
+
+				changeHandler: function( event, ui ) {
+					var $this = $( event.target ),
+						name  = $this.attr( 'name' );
+
+					if ( ! name ) {
+						return;
+					}
+
+					setTimeout( function() {
+						$( window ).trigger( {
+							type:          'cx-control-change',
+							controlName:   name,
+							controlStatus: $this.val()
+						} );
+					} );
 				}
 			},//End CX-Colorpicker
 
@@ -1296,6 +1372,31 @@
 					return this;
 				}
 
+			},
+
+			// CX-Text, CX-Textarea
+			text: {
+				inputClass: '.cx-ui-text:not([name*="__i__"]), .cx-ui-textarea:not([name*="__i__"])',
+
+				init: function() {
+					$( 'body' )
+						.on( 'input.cxText, change.cxText', this.inputClass, this.changeHandler.bind( this ) );
+				},
+
+				changeHandler: function( event ) {
+					var $this = $( event.currentTarget ),
+						name  = $this.attr( 'name' );
+
+					if ( ! name ) {
+						return;
+					}
+
+					$( window ).trigger( {
+						type: 'cx-control-change',
+						controlName: name,
+						controlStatus: $this.val()
+					} );
+				}
 			}
 		},
 
@@ -1312,11 +1413,11 @@
 					json = {},
 					pushCounters = {},
 					patterns = {
-						'validate': /^[a-zA-Z_][a-zA-Z0-9_-]*(?:\[(?:\d*|[a-zA-Z0-9_-]+)\])*$/,
-						'key':      /[a-zA-Z0-9_-]+|(?=\[\])/g,
+						'validate': /^[a-zA-Z_][a-zA-Z0-9_-]*(?:\[(?:\d*|[a-zA-Z0-9\s_-]+)\])*$/,
+						'key':      /[a-zA-Z0-9\s_-]+|(?=\[\])/g,
 						'push':     /^$/,
 						'fixed':    /^\d+$/,
-						'named':    /^[a-zA-Z0-9_-]+$/
+						'named':    /^[a-zA-Z0-9\s_-]+$/
 					},
 					serialized;
 
