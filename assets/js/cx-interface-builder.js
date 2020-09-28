@@ -444,7 +444,8 @@
 				switchState: function( event ) {
 					var $_input           = $( event.currentTarget ).siblings( this.inputClass ),
 						$customValueInput = $( event.target ).closest( this.customValueInputClass ),
-						status            = $_input[0].checked,
+						//status            = $_input[0].checked,
+						status            = cxInterfaceBuilder.utils.filterBoolValue( $_input.val() ),
 						$parent           = $( event.currentTarget ).closest( '.cx-control-checkbox' ),
 						name              = $parent.data( 'control-name' ),
 						statusData        = {};
@@ -687,8 +688,10 @@
 
 				init: function() {
 
+					$( this.selectRender.bind( this ) );
+
 					$( document )
-						.on( 'ready.cxSelect', this.selectRender.bind( this ) )
+						//.on( 'ready.cxSelect', this.selectRender.bind( this ) )
 						.on( 'cx-control-init', this.selectRender.bind( this ) )
 						.on( 'click.cxSelect', this.selectClearClass, this.clearSelect );
 
@@ -753,8 +756,11 @@
 			// CX-Media
 			media: {
 				init: function() {
+
+					$( this.mediaRender.bind( this ) );
+
 					$( document )
-						.on( 'ready.cxMedia', this.mediaRender.bind( this ) )
+						//.on( 'ready.cxMedia', this.mediaRender.bind( this ) )
 						.on( 'cx-control-init', this.mediaRender.bind( this ) );
 				},
 
@@ -926,8 +932,11 @@
 				inputClass: 'input.cx-ui-colorpicker:not([name*="__i__"])',
 
 				init: function() {
+
+					$( this.render.bind( this ) );
+
 					$( document )
-						.on( 'ready.cxColorpicker', this.render.bind( this ) )
+						//.on( 'ready.cxColorpicker', this.render.bind( this ) )
 						.on( 'cx-control-init', this.render.bind( this ) );
 				},
 
@@ -966,9 +975,13 @@
 				iconSetsKey: 'cx-icon-sets',
 
 				init: function() {
+
+					$( this.setIconsSets.bind( this, window.CxIconSets ) );
+					$( this.render.bind( this ) );
+
 					$( document )
-						.on( 'ready.cxIconpicker', this.setIconsSets.bind( this, window.CxIconSets ) )
-						.on( 'ready.cxIconpicker', this.render.bind( this ) )
+						//.on( 'ready.cxIconpicker', this.setIconsSets.bind( this, window.CxIconSets ) )
+						//.on( 'ready.cxIconpicker', this.render.bind( this ) )
 						.on( 'cx-control-init', this.render.bind( this ) );
 				},
 
@@ -1204,7 +1217,9 @@
 				sortablePlaceholderClass: 'sortable-placeholder',
 
 				init: function() {
-					$( document ).on( 'ready.cxRepeat', this.addEvents.bind( this ) );
+
+					$( this.addEvents.bind( this ) );
+					//$( document ).on( 'ready.cxRepeat', this.addEvents.bind( this ) );
 				},
 
 				addEvents: function() {
