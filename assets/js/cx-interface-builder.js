@@ -882,6 +882,10 @@
 									input_value   = input.attr( 'value' ),
 									pattern       = new RegExp( img_attr + '(,*)', 'i' );
 
+									if ( ! input_value ) {
+										return;
+									}
+
 									input_value = input_value.replace( pattern, '' );
 									input_value = input_value.replace( /(,$)/, '' );
 									input.attr( { 'value': input_value } ).trigger( 'change' );
