@@ -699,7 +699,9 @@
 
 				clearSelect: function( event ) {
 					event.preventDefault();
-					$( this ).siblings( 'select' ).val( null ).trigger( 'change' );
+					var $select = $( this ).siblings( 'select' );
+					$select.find( ':selected' ).removeAttr( 'selected' );
+					$select.val( null ).trigger( 'change' );
 				},
 
 				selectRender: function( event ) {
@@ -1155,6 +1157,9 @@
 				},
 
 				init: function() {
+
+					$( this.render.bind( this ) );
+
 					$( document )
 						.on( 'cx-control-init', this.render.bind( this ) );
 
