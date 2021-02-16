@@ -39,6 +39,18 @@ if ( ! class_exists( 'CX_Control_Wysiwyg' ) ) {
 		 */
 		public function register_depends() {
 			wp_enqueue_editor();
+
+			static $is_first = true;
+
+			if ( $is_first ) {
+				$editor_id = 'cx_wysiwyg';
+
+				$settings = _WP_Editors::parse_settings( $editor_id, array() );
+
+				_WP_Editors::editor_settings( $editor_id, $settings );
+
+				$is_first = false;
+			}
 		}
 
 		/**
@@ -64,27 +76,12 @@ if ( ! class_exists( 'CX_Control_Wysiwyg' ) ) {
 					$html .= '<label class="cx-label" for="' . esc_attr( $editor_id )  .'">' . $this->settings['label'] . '</label>';
 				}
 
-				$in_repeater = false !== strpos( $editor_id, '{{{data.index}}}' ) ? true : false;
-
-				if ( $in_repeater ) {
-
-					$html .= sprintf( '<textarea id="%1$s" class="cx-ui-wysiwyg wp-editor-area" name="%2$s" rows="%3$s">%4$s</textarea>',
-						esc_attr( $editor_id ),
-						esc_attr( $this->settings['name'] ),
-						esc_attr( $this->settings['rows'] ),
-						esc_textarea( $this->settings['value'] )
-					);
-
-				} else {
-					ob_start();
-
-					wp_editor( $this->settings['value'], $editor_id, array(
-						'textarea_name' => esc_attr( $this->settings['name'] ),
-						'textarea_rows' => esc_attr( $this->settings['rows'] ),
-					) );
-
-					$html .= ob_get_clean();
-				}
+				$html .= sprintf( '<textarea id="%1$s" class="cx-ui-wysiwyg wp-editor-area" name="%2$s" rows="%3$s">%4$s</textarea>',
+					esc_attr( $editor_id ),
+					esc_attr( $this->settings['name'] ),
+					esc_attr( $this->settings['rows'] ),
+					esc_textarea( $this->settings['value'] )
+				);
 
 			$html .= '</div>';
 

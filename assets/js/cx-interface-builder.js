@@ -1144,7 +1144,7 @@
 			// CX-Wysiwyg
 			wysiwyg: {
 
-				editorSettings: {
+				defaultEditorSettings: {
 					tinymce: {
 						wpautop: true,
 						toolbar1: 'formatselect,bold,italic,bullist,numlist,blockquote,alignleft,aligncenter,alignright,link,wp_more,spellchecker,wp_adv,dfw',
@@ -1156,9 +1156,17 @@
 					mediaButtons: true
 				},
 
+				editorSettings: false,
+
 				init: function() {
 
-					$( this.render.bind( this ) );
+					var self = this;
+
+					$( window ).on( 'load', function() {
+						setTimeout( function() {
+							$( self.render.bind( self ) );
+						} )
+					} );
 
 					$( document )
 						.on( 'cx-control-init', this.render.bind( this ) );
@@ -1181,9 +1189,9 @@
 							}
 
 							if ( typeof window.wp.editor.initialize !== 'undefined' ) {
-								window.wp.editor.initialize( id, self.editorSettings );
+								window.wp.editor.initialize( id, self.getEditorSettings() );
 							} else {
-								window.wp.oldEditor.initialize( id, self.editorSettings );
+								window.wp.oldEditor.initialize( id, self.getEditorSettings() );
 							}
 
 							$this.data( 'init', true );
@@ -1202,14 +1210,33 @@
 
 							if ( typeof window.wp.editor.initialize !== 'undefined' ) {
 								window.wp.editor.remove( id );
-								window.wp.editor.initialize( id, self.editorSettings );
+								window.wp.editor.initialize( id, self.getEditorSettings() );
 							} else {
 								window.wp.oldEditor.remove( id );
-								window.wp.oldEditor.initialize( id, self.editorSettings );
+								window.wp.oldEditor.initialize( id, self.getEditorSettings() );
 							}
 						} );
 					}
-				}
+				},
+				getEditorSettings: function() {
+					if ( this.editorSettings ) {
+						return this.editorSettings;
+					}
+
+					this.editorSettings = this.defaultEditorSettings;
+
+					if ( window.tinyMCEPreInit ) {
+						if ( window.tinyMCEPreInit.mceInit && window.tinyMCEPreInit.mceInit.cx_wysiwyg ) {
+							this.editorSettings.tinymce = window.tinyMCEPreInit.mceInit.cx_wysiwyg;
+						}
+
+						if ( window.tinyMCEPreInit.qtInit && window.tinyMCEPreInit.qtInit.cx_wysiwyg ) {
+							this.editorSettings.quicktags = window.tinyMCEPreInit.qtInit.cx_wysiwyg;
+						}
+					}
+
+					return this.editorSettings;
+				},
 			},//End CX-Wysiwyg
 
 			// CX-Repeater
