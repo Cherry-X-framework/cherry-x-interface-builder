@@ -45,8 +45,6 @@ gulp.task( 'js-minify', () => {
 
 //watch
 gulp.task( 'watch', () => {
-	gulp.watch( './assets/scss/**', ['scss'] );
-	gulp.watch( './assets/js/*.js', ['js-minify'] );
+	gulp.watch( [ './assets/scss/**' ], ['scss'] );
+	gulp.watch( [ './assets/js/*.js' ], ['js-minify'] );
 } );
-
-
