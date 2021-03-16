@@ -12,7 +12,7 @@ if ( ! defined( 'WPINC' ) ) {
 	<?php if ( ! empty( $args['title'] ) || ! empty( $args['description'] ) ) { ?>
 		<div class="cx-control__info">
 			<?php if ( ! empty( $args['title'] ) ) { ?>
-				<h4 class="cx-ui-kit__title cx-control__title" role="banner" ><?php echo wp_kses_post( $args['title'] ); ?></h4>
+				<div class="h4-style cx-ui-kit__title cx-control__title" role="banner" ><?php echo wp_kses_post( $args['title'] ); ?></div>
 			<?php } ?>
 			<?php if ( ! empty( $args['description'] ) ) { ?>
 				<div class="cx-ui-kit__description cx-control__description" role="note" ><?php echo wp_kses_post( $args['description'] ); ?></div>

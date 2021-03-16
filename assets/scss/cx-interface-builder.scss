@@ -52,8 +52,9 @@ label.cherry-label{
 
 .cx-ui-kit{
 	font-size: 13px;
-	h1{
+	h1, .h1-style {
 		font-weight: 700;
+		font-size: 1.838em;
 		line-height: 1.2em;
 		margin: 0;
 		.dashicons{
@@ -66,7 +67,7 @@ label.cherry-label{
 			}
 		}
 	}
-	h2{
+	h2, .h2-style {
 		font-weight: 600;
 		font-size: 1.538em;
 		line-height: 1.538em;
@@ -80,7 +81,7 @@ label.cherry-label{
 			}
 		}
 	}
-	h3{
+	h3, .h3-style {
 		font-weight: 600;
 		font-size: 1.231em;
 		line-height: 1.231em;
@@ -93,18 +94,17 @@ label.cherry-label{
 			}
 		}
 	}
-	h4{
-		font-weight: 500;
-		font-size: 1.077em;
-		line-height: 1.077em;
-
-	}
-	h5{
+	h4, .h4-style {
 		font-weight: 500;
 		font-size: 1.077em;
 		line-height: 1.077em;
 	}
-	h6{
+	h5, .h5-style {
+		font-weight: 500;
+		font-size: 1.077em;
+		line-height: 1.077em;
+	}
+	h6, .h6-style {
 		font-weight: 400;
 		font-size: 1em;
 		line-height: 1em;
