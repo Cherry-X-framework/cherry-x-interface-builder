@@ -39,6 +39,7 @@ if ( ! class_exists( 'CX_Control_Wysiwyg' ) ) {
 		 */
 		public function register_depends() {
 			wp_enqueue_editor();
+			wp_enqueue_media();
 
 			static $is_first = true;
 
