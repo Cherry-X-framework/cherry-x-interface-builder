@@ -260,6 +260,31 @@ if ( ! class_exists( 'CX_Control_Repeater' ) ) {
 		}
 
 		/**
+		 * Return default IB view content
+		 *
+		 * @param  [type] $view [description]
+		 * @param  array  $args [description]
+		 * @return [type]       [description]
+		 */
+		public function get_view( $view, $args = array() ) {
+
+			if ( ! $this->base_path ) {
+				return null;
+			}
+
+			$file = $this->base_path . 'views/' . $view . '.php';
+
+			if ( ! file_exists( $file ) ) {
+				return null;
+			}
+
+			ob_start();
+			include $file;
+			return ob_get_clean();
+
+		}
+
+		/**
 		 * Render single repeater field
 		 *
 		 * @param  string $index        Current row index.
@@ -283,19 +308,29 @@ if ( ! class_exists( 'CX_Control_Repeater' ) ) {
 			$field['value'] = isset( $this->data[ $field['name'] ] ) ? $this->data[ $field['name'] ] : $field['value'];
 			$field['name']  = sprintf( '%1$s[item-%2$s][%3$s]', $parent_name, $index, $field['name'] );
 
-			$ui_class_name  = 'CX_Control_' . ucwords( $field['type'] );
+			switch ( $field['type'] ) {
 
-			if ( ! class_exists( $ui_class_name ) ) {
-				return '<p>Class <b>' . $ui_class_name . '</b> not exist!</p>';
+				case 'html':
+					return sprintf( '<div class="cx-ui-container">%s</div>', $field['html'] );
+
+				default:
+
+					$ui_class_name  = 'CX_Control_' . ucwords( $field['type'] );
+
+					if ( ! class_exists( $ui_class_name ) ) {
+						return '<p>Class <b>' . $ui_class_name . '</b> not exist!</p>';
+					}
+
+					$ui_item = new $ui_class_name( $field );
+
+					if ( 'repeater' === $ui_item->settings['type'] && true === $this->_is_js_row ) {
+						$this->_childs[] = $ui_item;
+					}
+
+					return $ui_item->render();
+
 			}
 
-			$ui_item = new $ui_class_name( $field );
-
-			if ( 'repeater' === $ui_item->settings['type'] && true === $this->_is_js_row ) {
-				$this->_childs[] = $ui_item;
-			}
-
-			return $ui_item->render();
 		}
 
 		/**

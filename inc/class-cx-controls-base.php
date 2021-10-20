@@ -23,6 +23,13 @@ if ( ! class_exists( 'CX_Controls_Base' ) ) {
 		public $base_url = null;
 
 		/**
+		 * Base path
+		 *
+		 * @var string
+		 */
+		public $base_path = null;
+
+		/**
 		 * Settings list
 		 *
 		 * @since 1.0.0
@@ -121,6 +128,15 @@ if ( ! class_exists( 'CX_Controls_Base' ) ) {
 		 */
 		public function set_base_url( $url = '' ) {
 			$this->base_url = $url;
+		}
+
+		/**
+		 * Set up base path for next usage
+		 *
+		 * @param string $url array
+		 */
+		public function set_base_path( $path = '' ) {
+			$this->base_path = $path;
 		}
 
 		/**

@@ -1271,6 +1271,8 @@
 								window.wp.oldEditor.initialize( id, self.getEditorSettings() );
 							}
 
+							self.addSaveTriggerOnEditTagsPage( id );
+
 							$this.data( 'init', true );
 						} );
 					}
@@ -1313,6 +1315,22 @@
 					}
 
 					return this.editorSettings;
+				},
+				addSaveTriggerOnEditTagsPage: function( id ) {
+
+					if ( -1 === window.location.href.indexOf( 'edit-tags.php' ) ) {
+						return;
+					}
+
+					if ( window.tinymce ) {
+						var editor = window.tinymce.get( id );
+
+						if ( editor ) {
+							editor.on( 'change', function() {
+								editor.save();
+							} );
+						}
+					}
 				},
 			},//End CX-Wysiwyg
 
