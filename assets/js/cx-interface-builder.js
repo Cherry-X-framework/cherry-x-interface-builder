@@ -1332,6 +1332,21 @@
 								editor.save();
 							} );
 						}
+
+						// Reset editor content after added new term.
+						$( document ).ajaxComplete( function( event, xhr, settings ) {
+
+							if ( -1 === settings.data.indexOf( 'action=add-tag' ) ) {
+								return;
+							}
+
+							if ( -1 !== xhr.responseText.indexOf( 'wp_error' ) ) {
+								return;
+							}
+
+							editor.setContent( '' );
+
+						} );
 					}
 				},
 			},//End CX-Wysiwyg
