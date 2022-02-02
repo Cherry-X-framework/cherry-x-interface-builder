@@ -518,7 +518,7 @@
 
 					$( document ).ajaxComplete( function( event, xhr, settings ) {
 
-						if ( -1 === settings.data.indexOf( 'action=add-tag' ) ) {
+						if ( ! settings.data || -1 === settings.data.indexOf( 'action=add-tag' ) ) {
 							return;
 						}
 
@@ -604,7 +604,7 @@
 
 					$( document ).ajaxComplete( function( event, xhr, settings ) {
 
-						if ( -1 === settings.data.indexOf( 'action=add-tag' ) ) {
+						if ( ! settings.data || -1 === settings.data.indexOf( 'action=add-tag' ) ) {
 							return;
 						}
 
@@ -729,7 +729,7 @@
 					var $this    = $( element ),
 						$wrapper = $this.closest( this.selectWrapClass ),
 						name     = $this.attr( 'id' ),
-						settings = { placeholder: $this.data( 'placeholder' ), dropdownParent: $wrapper },
+						settings = { placeholder: $this.data( 'placeholder' ), dropdownCssClass: 'cx-ui-select2-dropdown' },
 						postType = $this.data( 'post-type' ),
 						exclude  = $this.data( 'exclude' ),
 						action   = $this.data( 'action' );
@@ -1336,7 +1336,7 @@
 						// Reset editor content after added new term.
 						$( document ).ajaxComplete( function( event, xhr, settings ) {
 
-							if ( -1 === settings.data.indexOf( 'action=add-tag' ) ) {
+							if ( ! settings.data || -1 === settings.data.indexOf( 'action=add-tag' ) ) {
 								return;
 							}
 
