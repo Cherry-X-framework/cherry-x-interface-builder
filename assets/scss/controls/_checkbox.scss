@@ -13,6 +13,7 @@
 	background-color: $grey_color_3;
 	user-select: none;
 	transition: all 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+	flex-shrink: 0;
 
 	.rtl & {
 		margin: 0 0 0 10px;
@@ -69,4 +70,8 @@
 .cx-checkbox-add-button {
 	@include link();
 	@include link_icon_before( '\f132' );
+
+	.cx-check-radio-group--horizontal & {
+		grid-column-start: 1;
+	}
 }

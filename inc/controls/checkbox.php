@@ -37,6 +37,7 @@ if ( ! class_exists( 'CX_Control_Checkbox' ) ) {
 			),
 			'allow_custom_value' => false,
 			'add_button_label'   => 'Add custom value',
+			'layout' => 'vertical', // `vertical` or `horizontal`
 			'label'  => '',
 			'class'  => '',
 		);
@@ -48,9 +49,9 @@ if ( ! class_exists( 'CX_Control_Checkbox' ) ) {
 		 */
 		public function render() {
 
-			$html  = '';
-
-			$class = implode( ' ',
+			$html   = '';
+			$layout = ! empty( $this->settings['layout'] ) ? $this->settings['layout'] : 'vertical';
+			$class  = implode( ' ',
 				array(
 					$this->settings['class'],
 				)
@@ -73,6 +74,8 @@ if ( ! class_exists( 'CX_Control_Checkbox' ) ) {
 				if ( '' !== $this->settings['label'] ) {
 					$html .= '<label class="cx-label" for="' . esc_attr( $this->settings['id'] ) . '">' . esc_html( $this->settings['label'] ) . '</label> ';
 				}
+
+				$html .= '<div class="cx-checkbox-group cx-check-radio-group--' . esc_attr( $layout ) . '">';
 
 				foreach ( $this->settings['options'] as $option => $option_value ) {
 
@@ -128,6 +131,8 @@ if ( ! class_exists( 'CX_Control_Checkbox' ) ) {
 						esc_html( $this->settings['add_button_label'] )
 					);
 				}
+
+				$html .= '</div>';
 			}
 
 			$html .= '</div>';

@@ -48,6 +48,7 @@ if ( ! class_exists( 'CX_Control_Radio' ) ) {
 				),
 			),
 			'allow_custom_value' => false,
+			'layout' => 'vertical', // `vertical` or `horizontal`
 			'label'  => '',
 			'class'  => '',
 		);
@@ -59,8 +60,9 @@ if ( ! class_exists( 'CX_Control_Radio' ) ) {
 		 */
 		public function render() {
 
-			$html  = '';
-			$class = implode( ' ',
+			$html   = '';
+			$layout = ! empty( $this->settings['layout'] ) ? $this->settings['layout'] : 'vertical';
+			$class  = implode( ' ',
 				array(
 					$this->settings['class'],
 				)
@@ -75,7 +77,7 @@ if ( ! class_exists( 'CX_Control_Radio' ) ) {
 					if ( '' !== $this->settings['label'] ) {
 						$html .= '<label class="cx-label" for="' . esc_attr( $this->settings['id'] ) . '">' . $this->settings['label'] . '</label> ';
 					}
-					$html .= '<div class="cx-radio-group">';
+					$html .= '<div class="cx-radio-group cx-check-radio-group--' . esc_attr( $layout ) . '">';
 						foreach ( $this->settings['options'] as $option => $option_value ) {
 
 							$checked    = $option == $this->settings['value'] ? ' checked' : '';

@@ -101,3 +101,11 @@ input.cx-radio-input{
 		}
 	}
 }
+
+.cx-check-radio-group {
+	&--horizontal {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+		column-gap: 5px;
+	}
+}
