@@ -824,7 +824,14 @@
 									if ( selected ) {
 										selected = selected.split(',');
 										selected.forEach( function( imgID ) {
-											selection.add( wp.media.attachment( imgID ) );
+
+											var attacmentModel = wp.media.attachment( imgID );
+
+											if ( undefined === attacmentModel.get( 'url' ) ) {
+												attacmentModel.fetch();
+											}
+
+											selection.add( attacmentModel );
 										} );
 									}
 								});
@@ -862,6 +869,7 @@
 												case 'image/png':
 												case 'image/gif':
 												case 'image/svg+xml':
+												case 'image/webp':
 														if ( attachment_data.sizes !== undefined ) {
 															img_src = attachment_data.sizes.thumbnail ? attachment_data.sizes.thumbnail.url : attachment_data.sizes.full.url;
 														}

@@ -145,6 +145,7 @@ if ( ! class_exists( 'CX_Control_Media' ) ) {
 										case 'image/png':
 										case 'image/gif':
 										case 'image/svg+xml':
+										case 'image/webp':
 											$img_src    = wp_get_attachment_image_src( $media_id, 'thumbnail' );
 											$img_src    = $img_src[0];
 											$thumb      = '<img src="' . esc_html( $img_src ) . '" alt="">';
