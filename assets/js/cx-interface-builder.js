@@ -824,28 +824,34 @@
 									if ( selected ) {
 										selected = selected.split(',');
 										selected.forEach( function( imgID ) {
-
-											var attacmentModel = wp.media.attachment( imgID );
-
-											if ( undefined === attacmentModel.get( 'url' ) ) {
-												attacmentModel.fetch();
-											}
-
-											selection.add( attacmentModel );
+											selection.add( wp.media.attachment( imgID ) );
 										} );
 									}
 								});
 							}
 
 							cx_uploader.on('select', function() {
-									var attachment     = cx_uploader.state().get( 'selection' ).toJSON(),
-										count          = 0,
-										input_value    = [],
-										input_ids      = [],
-										new_img_object = $( '.cx-all-images-wrap', settings.img_holder ),
-										new_img        = '';
+								var attachment       = cx_uploader.state().get( 'selection' ).toJSON(),
+									count            = 0,
+									input_value      = [],
+									input_ids        = [],
+									new_img_object   = $( '.cx-all-images-wrap', settings.img_holder ),
+									new_img          = '',
+									fetchAttachments = [];
 
-									while( attachment[ count ] ) {
+								attachment.forEach( function( attachmentData, index ) {
+
+									if ( !attachmentData.url && attachmentData.id ) {
+										fetchAttachments.push(
+											wp.media.attachment( attachmentData.id ).fetch().then( function( data ) {
+												attachment[index] = data;
+											} )
+										);
+									}
+								} );
+
+								Promise.all( fetchAttachments ).then( function() {
+									while ( attachment[count] ) {
 										var attachment_data = attachment[count],
 											attachment_id   = attachment_data.id,
 											attachment_url  = attachment_data.url,
@@ -855,53 +861,53 @@
 											thumb           = '',
 											thumb_type      = 'icon';
 
-											if ( 'both' === settings.value_format ) {
-												return_data = {
-													id: attachment_id,
-													url: attachment_url,
+										if ( 'both' === settings.value_format ) {
+											return_data = {
+												id:  attachment_id,
+												url: attachment_url,
+											}
+										} else {
+											return_data = attachment_data[settings.value_format];
+										}
+
+										switch ( mimeType ) {
+											case 'image/jpeg':
+											case 'image/png':
+											case 'image/gif':
+											case 'image/svg+xml':
+											case 'image/webp':
+												if ( attachment_data.sizes !== undefined ) {
+													img_src = attachment_data.sizes.thumbnail ? attachment_data.sizes.thumbnail.url : attachment_data.sizes.full.url;
 												}
-											} else {
-												return_data = attachment_data[ settings.value_format ];
-											}
+												thumb = '<img  src="' + img_src + '" alt="" data-img-attr="' + attachment_id + '">';
+												thumb_type = 'image';
+												break;
+											case 'application/pdf':
+												thumb = '<span class="dashicons dashicons-media-document"></span>';
+												break;
+											case 'image/x-icon':
+												thumb = '<span class="dashicons dashicons-format-image"></span>';
+												break;
+											case 'video/mpeg':
+											case 'video/mp4':
+											case 'video/quicktime':
+											case 'video/webm':
+											case 'video/ogg':
+												thumb = '<span class="dashicons dashicons-format-video"></span>';
+												break;
+											case 'audio/mpeg':
+											case 'audio/wav':
+											case 'audio/ogg':
+												thumb = '<span class="dashicons dashicons-format-audio"></span>';
+												break;
+										}
 
-											switch (mimeType) {
-												case 'image/jpeg':
-												case 'image/png':
-												case 'image/gif':
-												case 'image/svg+xml':
-												case 'image/webp':
-														if ( attachment_data.sizes !== undefined ) {
-															img_src = attachment_data.sizes.thumbnail ? attachment_data.sizes.thumbnail.url : attachment_data.sizes.full.url;
-														}
-														thumb = '<img  src="' + img_src + '" alt="" data-img-attr="' + attachment_id + '">';
-														thumb_type  = 'image';
-													break;
-												case 'application/pdf':
-													thumb = '<span class="dashicons dashicons-media-document"></span>';
-													break;
-												case 'image/x-icon':
-														thumb = '<span class="dashicons dashicons-format-image"></span>';
-													break;
-												case 'video/mpeg':
-												case 'video/mp4':
-												case 'video/quicktime':
-												case 'video/webm':
-												case 'video/ogg':
-														thumb = '<span class="dashicons dashicons-format-video"></span>';
-													break;
-												case 'audio/mpeg':
-												case 'audio/wav':
-												case 'audio/ogg':
-														thumb = '<span class="dashicons dashicons-format-audio"></span>';
-													break;
-											}
-
-											new_img += '<div class="cx-image-wrap cx-image-wrap--'+ thumb_type +'">'+
-														'<div class="inner">'+
-															'<div class="preview-holder" data-id-attr="' + attachment_id + '" data-url-attr="' + attachment_url + '"><div class="centered">' + thumb + '</div></div>'+
-															'<a class="cx-remove-image" href="#"><i class="dashicons dashicons-no"></i></a>'+
-															'<span class="title">' + attachment_data.title + '</span>'+
-														'</div>'+
+										new_img += '<div class="cx-image-wrap cx-image-wrap--' + thumb_type + '">' +
+														'<div class="inner">' +
+															'<div class="preview-holder" data-id-attr="' + attachment_id + '" data-url-attr="' + attachment_url + '"><div class="centered">' + thumb + '</div></div>' +
+															'<a class="cx-remove-image" href="#"><i class="dashicons dashicons-no"></i></a>' +
+															'<span class="title">' + attachment_data.title + '</span>' +
+														'</div>' +
 													'</div>';
 
 										input_value.push( return_data );
@@ -912,6 +918,7 @@
 									settings.input.val( prepareInputValue( input_value, settings ) ).attr( 'data-ids-attr', input_ids.join( ',' ) ).trigger( 'change' );
 									new_img_object.html( new_img );
 								} );
+							} );
 
 							var removeMediaPreview = function( item ) {
 								var buttonParent = item.closest( '.cx-ui-media-wrap' ),
