@@ -790,6 +790,13 @@
 							return input_value;
 						};
 
+					var $postId = $( '#post_ID' );
+
+					// Added for attach a media file to post.
+					if ( $postId.length && wp.media.view && wp.media.view.settings && wp.media.view.settings.post && ! wp.media.view.settings.post.id ) {
+						wp.media.view.settings.post.id = $postId.val();
+					}
+
 					$buttons.each( function() {
 						var button = $( this ),
 							buttonParent = button.closest('.cx-ui-media-wrap'),

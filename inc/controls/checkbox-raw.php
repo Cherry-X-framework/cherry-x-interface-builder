@@ -62,7 +62,7 @@ if ( ! class_exists( 'CX_Control_Checkbox_Raw' ) ) {
 				$this->settings['options'] = call_user_func( $this->settings['options_callback'] );
 			}
 
-			$data_options = htmlspecialchars( json_encode( array_values( $this->settings['options'] ) ) );
+			$data_options = htmlspecialchars( json_encode( array_keys( $this->settings['options'] ) ) );
 			$allow_custom = $this->settings['allow_custom_value'];
 			$allow_custom = filter_var( $allow_custom, FILTER_VALIDATE_BOOLEAN );
 
@@ -75,7 +75,7 @@ if ( ! class_exists( 'CX_Control_Checkbox_Raw' ) ) {
 				}
 
 				if ( '' !== $this->settings['label'] ) {
-					$html .= '<label class="cx-label" for="' . esc_attr( $this->settings['id'] ) . '">' . esc_html( $this->settings['label'] ) . '</label> ';
+					$html .= '<label class="cx-label" for="' . esc_attr( $this->settings['id'] ) . '">' . wp_kses_post( $this->settings['label'] ) . '</label> ';
 				}
 
 				foreach ( $this->settings['options'] as $option => $option_value ) {
