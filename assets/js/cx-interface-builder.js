@@ -15,6 +15,9 @@
 			// Control Init
 			this.control.init();
 			$( document ).on( 'cxFramework:interfaceBuilder:control', this.control.init.bind( this.control ) );
+
+			// Control Validation
+			this.controlValidation.init();
 		},
 
 		component: {
@@ -1786,10 +1789,151 @@
 
 				return ! isNaN( num ) ? !! num : !! String( value ).toLowerCase().replace( !!0, '' );
 			}
-		}
+		},
+
+		controlValidation: {
+
+			errorMessages: {
+				required: 'This field is required.'
+			},
+
+			init: function() {
+				$( '#post, #edittag, #your-profile, .cx-form' ).on( 'submit', this.submitForm.bind( this ) );
+
+				cxInterfaceBuilder.filters.addFilter( 'cxInterfaceBuilder/form/validation', this.requiredValidation.bind( this ) )
+			},
+
+			submitForm: function( event ) {
+
+				this.removeAllFieldsErrors();
+
+				if ( 'undefined' !== typeof window.tinyMCE ) {
+					window.tinyMCE.triggerSave();
+				}
+
+				var self = this,
+					validation = cxInterfaceBuilder.filters.applyFilters( 'cxInterfaceBuilder/form/validation', true, event );
+
+				if ( ! validation ) {
+					$( 'html, body' ).stop().animate( { scrollTop: $( '.cx-control--error' ).first().offset().top - 40 }, 500 );
+					event.preventDefault();
+				}
+			},
+
+			requiredValidation: function( validation, event ) {
+				var self            = this,
+					$form           = $( event.target ),
+					$requiredFields = $form.find( '.cx-control-required' ),
+					hasEmptyFields  = false;
+
+				if ( ! $requiredFields.length ) {
+					return validation;
+				}
+
+				$requiredFields.each( function() {
+					var $field      = $( this ),
+						controlName = $field.data( 'control-name' ),
+						controlVal  = false;
+
+					if ( $field.hasClass( 'cx-control-checkbox' ) || $field.hasClass( 'cx-control-radio' ) ) {
+
+						controlVal = !! $field.find( '[name^="' + controlName + '"]' ).filter( ':checked' ).length;
+
+					} else {
+						controlVal = $field.find( '[name^="' + controlName +'"]' ).val();
+					}
+
+					if ( Array.isArray( controlVal ) ) {
+						controlVal = !! controlVal.length;
+					}
+
+					if ( ! controlVal ) {
+						self.addFieldError( $field, self.errorMessages.required );
+						hasEmptyFields = true;
+					}
+				} );
+
+				if ( hasEmptyFields ) {
+					return false;
+				}
+
+				return validation;
+			},
+
+			addFieldError: function( $field, message ) {
+				var $error = $field.find( '.cx-control__error' );
+
+				if ( $error.length ) {
+					$error.html( message );
+				} else {
+					$field.find('.cx-control__content').append( '<div class="cx-control__error">' + message + '</div>' );
+				}
+
+				$field.addClass( 'cx-control--error' );
+			},
+
+			removeFieldError: function( $field ) {
+				$field.find( '.cx-control__error' ).remove();
+				$field.removeClass( 'cx-control--error' );
+			},
+
+			removeAllFieldsErrors: function() {
+				var self = this,
+					$errorFields = $( '.cx-control--error' );
+
+				if ( $errorFields.length ) {
+					$errorFields.each( function() {
+						self.removeFieldError( $( this ) );
+					} );
+				}
+			},
+		},
+
+		filters: ( function() {
+
+			var callbacks = {};
+
+			return {
+
+				addFilter: function( name, callback ) {
+
+					if ( ! callbacks.hasOwnProperty( name ) ) {
+						callbacks[name] = [];
+					}
+
+					callbacks[name].push(callback);
+
+				},
+
+				applyFilters: function( name, value, args ) {
+
+					if ( ! callbacks.hasOwnProperty( name ) ) {
+						return value;
+					}
+
+					if ( args === undefined ) {
+						args = [];
+					}
+
+					var container = callbacks[ name ];
+					var cbLen     = container.length;
+
+					for (var i = 0; i < cbLen; i++) {
+						if (typeof container[i] === 'function') {
+							value = container[i](value, args);
+						}
+					}
+
+					return value;
+				}
+			};
+
+		})()
 
 	};
 
 	cxInterfaceBuilder.init();
+
+	window.cxInterfaceBuilderAPI = cxInterfaceBuilder;
 
 }( jQuery, window._ ) );
