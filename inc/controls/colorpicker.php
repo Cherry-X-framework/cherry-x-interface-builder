@@ -27,6 +27,7 @@ if ( ! class_exists( 'CX_Control_Colorpicker' ) ) {
 			'value'  => '',
 			'label'  => '',
 			'class'  => '',
+			'alpha'  => false,
 		);
 
 		/**
@@ -76,12 +77,18 @@ if ( ! class_exists( 'CX_Control_Colorpicker' ) ) {
 				)
 			);
 
+			$alpha_attr = '';
+
+			if ( $this->settings['alpha'] ) {
+				$alpha_attr = ' data-alpha-enabled="true"';
+			}
+
 			$html .= '<div class="cx-ui-container ' . esc_attr( $class ) . '">';
 				if ( '' !== $this->settings['label'] ) {
 					$html .= '<label class="cx-label" for="' . esc_attr( $this->settings['id'] ) . '">' . wp_kses_post( $this->settings['label'] ) . '</label> ';
 				}
 				$html .= '<div class="cx-ui-colorpicker-wrapper">';
-					$html .= '<input type="text" id="' . esc_attr( $this->settings['id'] ) . '" class="cx-ui-colorpicker" name="' . esc_attr( $this->settings['name'] ) . '" value="' . esc_html( $this->settings['value'] ) . '"/>';
+					$html .= '<input type="text" id="' . esc_attr( $this->settings['id'] ) . '" class="cx-ui-colorpicker" name="' . esc_attr( $this->settings['name'] ) . '" value="' . esc_html( $this->settings['value'] ) . '"' . $alpha_attr . '/>';
 				$html .= '</div>';
 			$html .= '</div>';
 

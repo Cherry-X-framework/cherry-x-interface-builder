@@ -229,8 +229,9 @@ if ( ! class_exists( 'CX_Control_Repeater' ) ) {
 			foreach ( $this->settings['fields'] as $field ) {
 
 				$field_classes = array(
+					'cx-ui-repeater-item-control',
+					'cx-repeater-item-control-' . esc_attr( $field['type'] ),
 					$field['id'] . '-wrap',
-					'cx-ui-repeater-item-control'
 				);
 
 				if ( ! empty( $field['class'] ) ) {
@@ -264,7 +265,49 @@ if ( ! class_exists( 'CX_Control_Repeater' ) ) {
 			}
 
 			if ( ! empty( $this->data[ $this->settings['title_field'] ] ) ) {
-				return  $this->data[ $this->settings['title_field'] ];
+				$title_field    = $this->settings['title_field'];
+				$field_settings = $this->settings['fields'][ $title_field ];
+				$row_title      = $this->data[ $title_field ];
+
+				if ( empty( $row_title ) ) {
+					return '';
+				}
+
+				switch( $field_settings['type'] ) {
+
+					case 'posts':
+
+						if ( is_array( $row_title ) ) {
+							$row_title = array_map( 'get_the_title', $row_title );
+						} else {
+							$row_title = get_the_title( $row_title );
+						}
+						break;
+
+					case 'select':
+
+						if ( ! is_array( $row_title ) ) {
+							$row_title = array( $row_title );
+						}
+
+						$row_title = array_map( function ( $item ) use ( $field_settings ) {
+
+							if ( isset( $field_settings['options'][ $item ] ) ) {
+								return $field_settings['options'][ $item ];
+							}
+
+							return $item;
+
+						}, $row_title );
+
+						break;
+				}
+
+				if ( is_array( $row_title ) ) {
+					$row_title = join( ', ', $row_title );
+				}
+
+				return $row_title;
 			}
 
 			return '';

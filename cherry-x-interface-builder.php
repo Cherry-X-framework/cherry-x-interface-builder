@@ -2,7 +2,7 @@
 /**
  * Interface Builder module
  *
- * Version: 1.9.0
+ * Version: 2.0.1
  */
 
 // If this file is called directly, abort.
@@ -42,7 +42,7 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 		 *
 		 * @var string
 		 */
-		protected $version = '1.9.0';
+		protected $version = '2.0.1';
 
 		/**
 		 * Conditions
@@ -56,6 +56,13 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 		 * @var array
 		 */
 		public static $fields_value = array();
+
+		/**
+		 * Controls array
+		 *
+		 * @var array
+		 */
+		public static $controls_args = array();
 
 		/**
 		 * Module settings.
@@ -249,15 +256,15 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 					}
 
 					if ( 'control' ===  $type ) {
+
+						if ( 'html' !== $args['type'] ) {
+							self::$controls_args[ $args['id'] ] = $this->get_control_args_for_js( $args );
+						}
+
 						$instance         = $this->controls->register_control( $args['type'], $args );
 						$args['instance'] = $instance;
 
 						$this->add_dependencies( $instance );
-
-					}
-
-					if ( array_key_exists( 'conditions', $args ) ) {
-						self::$conditions[ $args['id'] ] = $args['conditions'];
 					}
 
 					if ( array_key_exists( 'value', $args ) ) {
@@ -281,14 +288,15 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 					}
 
 					if ( 'control' ===  $type ) {
+
+						if ( 'html' !== $value['type'] ) {
+							self::$controls_args[ $value['id'] ] = $this->get_control_args_for_js( $value );
+						}
+
 						$instance          = $this->controls->register_control( $value['type'], $value );
 						$value['instance'] = $instance;
 
 						$this->add_dependencies( $instance );
-					}
-
-					if ( array_key_exists( 'conditions', $value ) ) {
-						self::$conditions[ $key ] = $value['conditions'];
 					}
 
 					if ( array_key_exists( 'value', $value ) ) {
@@ -298,6 +306,38 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 					$this->structure[ $key ] = $value;
 				}
 			}
+		}
+
+		protected function get_control_args_for_js( $args = array() ) {
+
+			$available_args = array(
+				'name',
+				'type',
+				'multiple',
+				'fields',
+				'conditions',
+			);
+
+			$result = array();
+
+			foreach ( $available_args as $arg ) {
+
+				if ( ! isset( $args[ $arg ] ) ) {
+					continue;
+				}
+
+				if ( 'fields' === $arg && ! empty( $args['fields'] ) ) {
+
+					foreach ( $args['fields'] as $field_id => $field_args ) {
+						$result[ $arg ][ $field_id ] = $this->get_control_args_for_js( $field_args );
+					}
+
+				} else {
+					$result[ $arg ] = $args[ $arg ];
+				}
+			}
+
+			return $result;
 		}
 
 		/**
@@ -553,18 +593,12 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 		 */
 		public function enqueue_assets() {
 
-			$suffix = '';
-
-			if ( defined( 'SCRIPT_DEBUG' ) && false === SCRIPT_DEBUG ) {
-				$suffix = '.min';
-			}
-
 			$js_deps  = array_unique( self::$deps['js'] );
 			$css_deps = array_unique( self::$deps['css'] );
 
 			wp_enqueue_script(
 				'cx-interface-builder',
-				$this->url . 'assets/js/cx-interface-builder' . $suffix . '.js',
+				$this->url . 'assets/js/cx-interface-builder.js',
 				$js_deps,
 				$this->version,
 				true
@@ -572,9 +606,9 @@ if ( ! class_exists( 'CX_Interface_Builder' ) ) {
 
 			wp_localize_script( 'cx-interface-builder', 'cxInterfaceBuilder',
 				array(
-					'conditions' => self::$conditions,
-					'fields'     => self::$fields_value,
-					'i18n'       => apply_filters( 'cx-interface-builder/config/i18n',  array(
+					'fields'   => self::$fields_value,
+					'controls' => self::$controls_args,
+					'i18n'     => apply_filters( 'cx-interface-builder/config/i18n', array(
 						'requiredError' => 'This field is required.',
 						'minError'      => 'Please enter a value greater than or equal to %s.',
 						'maxError'      => 'Please enter a value less than or equal to %s.',
