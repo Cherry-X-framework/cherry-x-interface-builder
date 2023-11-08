@@ -59,6 +59,8 @@ const wysiwyg = {
 							controlName:   $this.attr( 'name' ),
 							controlStatus: editor.getContent()
 						} );
+
+						$this.trigger( 'change' );
 					} );
 				}
 

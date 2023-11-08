@@ -19,12 +19,15 @@ const ControlValidation = {
 		cxInterfaceBuilderAPI.filters.addFilter( 'cxInterfaceBuilder/form/validation', this.numberValidation.bind( this ) );
 
 		$( document ).on(
-			'change',
+			'input change',
 			'.cx-control input, .cx-control textarea, .cx-control select',
 			this.removeFieldErrorOnChange.bind( this )
 		);
 
 		$( '.cx-control-repeater' ).on( 'focusin', this.removeRepeaterErrorOnChange.bind( this ) );
+
+		// woocommerce tabs compatibility
+		this.wooTabsCompatibility();
 	},
 
 	isBlockEditor: function() {
@@ -90,6 +93,14 @@ const ControlValidation = {
 			return validation;
 		}
 
+		$requiredFields = $requiredFields.filter( function() {
+			return ! $( this ).closest( '.cx-control-hidden, .cx-controls-novalidate' ).length;
+		} );
+
+		if ( ! $requiredFields.length ) {
+			return validation;
+		}
+
 		$requiredFields.each( function() {
 			var $field      = $( this ),
 				controlName = $field.data( 'control-name' ),
@@ -126,13 +137,17 @@ const ControlValidation = {
 			return validation;
 		}
 
-		if ( ! this.isBlockEditor() ) {
+		var self             = this,
+			$numberFields    = $form.find( '.cx-control-stepper:not(.cx-control-hidden), .cx-control-slider:not(.cx-control-hidden), .cx-repeater-item-control-stepper:not(.cx-control-hidden), .cx-repeater-item-control-slider:not(.cx-control-hidden)' ),
+			hasInValidFields = false;
+
+		if ( ! $numberFields.length ) {
 			return validation;
 		}
 
-		var self             = this,
-			$numberFields    = $form.find( '.cx-control-stepper:not(.cx-control-hidden), .cx-repeater-item-control-stepper:not(.cx-control-hidden)' ),
-			hasInValidFields = false;
+		$numberFields = $numberFields.filter( function() {
+			return ! $( this ).closest( '.cx-control-hidden, .cx-controls-novalidate' ).length;
+		} );
 
 		if ( ! $numberFields.length ) {
 			return validation;
@@ -141,9 +156,9 @@ const ControlValidation = {
 		$numberFields.each( function() {
 			var $field   = $( this ),
 				$input   = $field.find( 'input.cx-ui-stepper-input' ),
-				minAttr  = $input.attr( 'min' ),
-				maxAttr  = $input.attr( 'max' ),
-				stepAttr = $input.attr( 'step' ),
+				minAttr  = $input.data( 'min' ),
+				maxAttr  = $input.data( 'max' ),
+				stepAttr = $input.data( 'step' ),
 				value    = $input.val();
 
 			if ( '' !== minAttr && value && Number( value ) < Number( minAttr ) ) {
@@ -251,6 +266,13 @@ const ControlValidation = {
 				$repeaterItem.find( '.cx-ui-repeater-toggle' ).trigger( 'click' );
 			}
 
+			// Field inside woocommerce tab panel.
+			var $tabPanel = $field.closest( '.panel.woocommerce_options_panel' );
+
+			if ( $tabPanel.length ) {
+				$( 'a[href="#' + $tabPanel.attr( 'id' ) + '"]' ).trigger( 'click' );
+			}
+
 			// Field inside hidden postbox.
 			var $postbox = $field.closest( '.postbox.closed' );
 
@@ -282,7 +304,38 @@ const ControlValidation = {
 		}
 
 		$scrollSelector.stop().animate( { scrollTop: scrollTop - offset }, 500 );
-	}
+	},
+
+	wooTabsCompatibility: function() {
+		var $wcProductData = $( '#woocommerce-product-data' );
+
+		if ( ! $wcProductData.length ) {
+			return;
+		}
+
+		$( '#woocommerce-product-data .panel.woocommerce_options_panel' ).on(
+			'woocommerce_tab_shown',
+			function( event ) {
+				var $panel = $( event.target ),
+					$otherPanels = $panel.parent().find( '.panel.woocommerce_options_panel' ).not( $panel );
+
+				if ( $otherPanels.length ) {
+					$otherPanels.each( function() {
+						var $_panel = $( this ),
+							panelIsHidden = $( '.wc-tabs li.' + $_panel.attr( 'id' ) + '_tab[style*="display: none"]' ).length;
+
+						if ( panelIsHidden ) {
+							$_panel.addClass( 'cx-controls-novalidate' );
+						} else {
+							$_panel.removeClass( 'cx-controls-novalidate' );
+						}
+					} );
+				}
+
+				$panel.removeClass( 'cx-controls-novalidate' );
+			}
+		);
+	},
 };
 
 export default ControlValidation;

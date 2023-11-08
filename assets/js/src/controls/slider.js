@@ -1,6 +1,7 @@
 const slider = {
 	init: function() {
 		$( 'body' ).on( 'input.cxSlider change.cxSlider', '.cx-slider-unit, .cx-ui-stepper-input', this.changeHandler.bind( this ) );
+		$( 'body' ).on( 'focusin.cxStepper focusout.cxStepper', '.cx-ui-stepper-input', this.switchNumberAttrs.bind( this ) );
 	},
 
 	changeHandler: function( event ) {
@@ -44,6 +45,22 @@ const slider = {
 
 				return current;
 			} );
+		}
+	},
+
+	switchNumberAttrs: function( event ) {
+		var $this = $( event.currentTarget );
+
+		if ( 'focusin' === event.type ) {
+			$this.attr( {
+				min:  $this.data( 'min' ),
+				max:  $this.data( 'max' ),
+				step: $this.data( 'step' ),
+			} );
+		} else {
+			$this.removeAttr( 'min' );
+			$this.removeAttr( 'max' );
+			$this.attr( 'step', 'any' );
 		}
 	}
 };

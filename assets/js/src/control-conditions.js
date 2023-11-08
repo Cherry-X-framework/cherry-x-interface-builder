@@ -388,14 +388,8 @@ const ConditionsManager = {
 
 		if ( ! isVisible ) {
 			$selector.addClass( hiddenClass );
-			$selector.find( '[required]' )
-				.removeAttr( 'required' )
-				.attr( 'data-required', 1 );
 		} else {
 			$selector.removeClass( hiddenClass );
-			$selector.find( '[data-required="1"]' )
-				.removeAttr( 'data-required' )
-				.attr( 'required', true );
 		}
 	},
 

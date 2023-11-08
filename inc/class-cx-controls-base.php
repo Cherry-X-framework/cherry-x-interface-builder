@@ -78,7 +78,7 @@ if ( ! class_exists( 'CX_Controls_Base' ) ) {
 		public function get_required() {
 
 			if ( $this->settings['required'] ) {
-				return 'required="required"';
+				return 'data-required="1"';
 			}
 
 			return '';

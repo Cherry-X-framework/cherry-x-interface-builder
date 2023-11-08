@@ -27,7 +27,10 @@ const checkbox = {
 			return;
 		}
 
-		$_input.val( ! status ? 'true' : 'false' ).attr( 'checked', ! status ? true : false );
+		$_input
+			.val( ! status ? 'true' : 'false' )
+			.attr( 'checked', ! status ? true : false )
+			.trigger( 'change' );
 
 		if ( !$group[0] ) {
 			return;

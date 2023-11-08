@@ -112,18 +112,6 @@ if ( ! class_exists( 'CX_Control_Iconpicker' ) ) {
 		}
 
 		/**
-		 * Get required attribute
-		 *
-		 * @return string required attribute
-		 */
-		public function get_required() {
-			if ( $this->settings['required'] ) {
-				return 'required="required"';
-			}
-			return '';
-		}
-
-		/**
 		 * Render html UI_Iconpicker.
 		 *
 		 * @since 1.0.0

@@ -53,21 +53,6 @@ if ( ! class_exists( 'CX_Control_Dimensions' ) ) {
 		);
 
 		/**
-		 * Get required attribute.
-		 *
-		 * @since 1.0.0
-		 * @return string
-		 */
-		public function get_required() {
-
-			if ( $this->settings['required'] ) {
-				return 'required="required"';
-			}
-
-			return '';
-		}
-
-		/**
 		 * Render html UI_Dimension.
 		 *
 		 * @since 1.0.0
