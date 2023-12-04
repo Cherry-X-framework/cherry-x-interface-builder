@@ -35,16 +35,22 @@ const ControlValidation = {
 	},
 
 	onBlockEditorSavePost: function() {
-		var self     = this,
-			editor   = wp.data.dispatch( 'core/editor' ),
-			savePost = editor.savePost;
+		var self         = this,
+			editor       = wp.data.dispatch( 'core/editor' ),
+			editorSelect = wp.data.select( 'core/editor' ),
+			savePost     = editor.savePost;
 
 		editor.savePost = function( options ) {
 			options = options || {};
 
 			if ( options.isAutosave || options.isPreview ) {
-				savePost( options );
-				return;
+				return savePost( options );
+			}
+
+			var isDraft = ['draft', 'auto-draft'].includes( editorSelect.getEditedPostAttribute( 'status' ) );
+
+			if ( isDraft ) {
+				return savePost( options );
 			}
 
 			self.beforeValidation();
@@ -52,7 +58,7 @@ const ControlValidation = {
 			var validation = cxInterfaceBuilderAPI.filters.applyFilters( 'cxInterfaceBuilder/form/validation', true, $( '#editor' ) );
 
 			if ( validation ) {
-				savePost( options );
+				return savePost( options );
 			} else {
 				self.scrollToFirstErrorField();
 			}
