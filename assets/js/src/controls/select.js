@@ -48,14 +48,13 @@ const select = {
 			name     = $this.attr( 'name' ),
 			settings = { placeholder: $this.data( 'placeholder' ), dropdownCssClass: 'cx-ui-select2-dropdown' },
 			postType = $this.data( 'post-type' ),
-			exclude  = $this.data( 'exclude' ),
 			action   = $this.data( 'action' );
 
 		if ( action && postType ) {
 
 			settings.ajax = {
 				url: function() {
-					return ajaxurl + '?action=' + action + '&post_type=' + $this.data( 'post-type' ) + '&exclude=' + exclude;
+					return ajaxurl + '?action=' + action + '&post_type=' + $this.data( 'post-type' ) + '&exclude=' + $this.data( 'exclude' );
 				},
 				dataType: 'json'
 			};
@@ -65,11 +64,17 @@ const select = {
 		}
 
 		$this.select2( settings ).on( 'change.cxSelect2', function( event ) {
+			var value = $( event.target ).val();
+
 			$( window ).trigger( {
 				type: 'cx-select2-change',
 				controlName: name,
-				controlStatus: $( event.target ).val()
+				controlStatus: value
 			} );
+
+			if ( action && postType ) {
+				$this.data( 'exclude', value.join( ',' ) );
+			}
 		} );
 	}
 };

@@ -530,8 +530,8 @@ label.cherry-label{
 		display: flex;
 		flex-flow: row nowrap;
 		&__info{
-			-webkit-box-flex: 0;
-			flex: 0 1 30%;
+			flex: 0 0 30%;
+			max-width: 30%;
 			padding-right: $padding * 1.5;
 			.rtl & {
 				padding-left: $padding * 1.5;
@@ -539,8 +539,8 @@ label.cherry-label{
 			}
 		}
 		&__content{
-			-webkit-box-flex: 0;
-			flex: 0 1 70%;
+			flex: 0 0 70%;
+			max-width: 70%;
 		}
 	}
 

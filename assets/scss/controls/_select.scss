@@ -2,6 +2,7 @@ select.cx-ui-select{
 	width: 100%;
 	outline: 0 none;
 	@include input();
+	padding-inline-end: 25px;
 
 	&:focus{
 		box-shadow: none;
@@ -29,7 +30,8 @@ select.select2-hidden-accessible{
 					height: 28px;
 
 					.select2-selection__rendered{
-						padding: 5px;
+						padding-block: 5px;
+						padding-inline: 5px 15px;
 						font-size: 12px;
 						line-height: 18px;
 					}
@@ -45,10 +47,11 @@ select.select2-hidden-accessible{
 					min-height: 25px;
 
 					.select2-selection__rendered{
+						display: block;
+						padding: 2px;
 						font-size: 12px;
 						line-height: 14px;
-						padding: 2px;
-						display: block;
+						white-space: normal;
 
 						&:focus {
 							outline: none;
@@ -65,12 +68,8 @@ select.select2-hidden-accessible{
 
 							.select2-selection__choice__remove{
 								color: $remove_color;
-								margin-right: 5px;
+								margin-inline-end: 5px;
 								font-size: 14px;
-								.rtl & {
-									margin-left: 5px;
-									margin-right: 0;
-								}
 							}
 						}
 
