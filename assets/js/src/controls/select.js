@@ -46,7 +46,8 @@ const select = {
 		var $this    = $( element ),
 			$wrapper = $this.closest( this.selectWrapClass ),
 			name     = $this.attr( 'name' ),
-			settings = { placeholder: $this.data( 'placeholder' ), dropdownCssClass: 'cx-ui-select2-dropdown' },
+			settings = { placeholder: $this.data( 'placeholder' ) },
+			dropdownCssClass = 'cx-ui-select2-dropdown',
 			postType = $this.data( 'post-type' ),
 			action   = $this.data( 'action' );
 
@@ -75,6 +76,18 @@ const select = {
 			if ( action && postType ) {
 				$this.data( 'exclude', value.join( ',' ) );
 			}
+		} ).on( 'select2:opening', function() {
+			var $dropdown = $this.data( 'select2' )?.$dropdown.find( '.select2-dropdown' );
+
+			if ( ! $dropdown || ! $dropdown.length ) {
+				return;
+			}
+
+			if ( $dropdown.hasClass( dropdownCssClass ) ) {
+				return;
+			}
+
+			$dropdown.addClass( dropdownCssClass );
 		} );
 	}
 };
