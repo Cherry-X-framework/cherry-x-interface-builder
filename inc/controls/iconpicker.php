@@ -42,11 +42,12 @@ if ( ! class_exists( 'CX_Control_Iconpicker' ) ) {
 		 * @var array
 		 */
 		private $default_icon_data = array(
-			'icon_set'    => '',
-			'icon_css'    => '',
-			'icon_base'   => 'icon',
-			'icon_prefix' => '',
-			'icons'       => '',
+			'icon_set'     => '',
+			'icon_css'     => '',
+			'icon_depends' => '',
+			'icon_base'    => 'icon',
+			'icon_prefix'  => '',
+			'icons'        => '',
 		);
 
 		/**
@@ -97,7 +98,7 @@ if ( ! class_exists( 'CX_Control_Iconpicker' ) ) {
 				'cx-iconpicker',
 				$this->base_url . 'assets/lib/iconpicker/jquery-iconpicker.js',
 				array( 'jquery' ),
-				'1.0.0',
+				'1.0.1',
 				true
 			);
 		}
@@ -215,18 +216,25 @@ if ( ! class_exists( 'CX_Control_Iconpicker' ) ) {
 		 */
 		public function prepare_icon_set() {
 
+			if ( array_key_exists( $this->settings['icon_data']['icon_set'], self::$sets ) ) {
+				return;
+			}
+
+			if ( is_callable( $this->settings['icon_data']['icons'] ) ) {
+				$this->settings['icon_data']['icons'] = call_user_func( $this->settings['icon_data']['icons'] );
+			}
+
 			if ( empty( $this->settings['icon_data']['icons'] ) ) {
 				$this->maybe_parse_set_from_css();
 			}
 
-			if ( ! array_key_exists( $this->settings['icon_data']['icon_set'], self::$sets ) ) {
-				self::$sets[ $this->settings['icon_data']['icon_set'] ] = array(
-					'iconCSS'    => $this->settings['icon_data']['icon_css'],
-					'iconBase'   => $this->settings['icon_data']['icon_base'],
-					'iconPrefix' => $this->settings['icon_data']['icon_prefix'],
-					'icons'      => $this->settings['icon_data']['icons'],
-				);
-			}
+			self::$sets[ $this->settings['icon_data']['icon_set'] ] = array(
+				'iconCSS'     => $this->settings['icon_data']['icon_css'],
+				'iconDepends' => $this->settings['icon_data']['icon_depends'],
+				'iconBase'    => $this->settings['icon_data']['icon_base'],
+				'iconPrefix'  => $this->settings['icon_data']['icon_prefix'],
+				'icons'       => $this->settings['icon_data']['icons'],
+			);
 		}
 
 		/**
@@ -329,7 +337,7 @@ if ( ! class_exists( 'CX_Control_Iconpicker' ) ) {
 				$json = json_encode( $data );
 
 				printf(
-					'<script> if ( ! window.CxIconSets ) { window.CxIconSets = {} } window.CxIconSets.%1$s = %2$s</script>',
+					'<script> if ( ! window.CxIconSets ) { window.CxIconSets = {} } window.CxIconSets["%1$s"] = %2$s</script>',
 					$set,
 					$json
 				);

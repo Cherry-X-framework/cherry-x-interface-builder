@@ -629,7 +629,14 @@
 
                 if ((val !== false) && (val !== '')) {
                     if (this.hasInput()) {
-                        this.input.val( this.options.iconClassPrefix + this.iconpickerValue );
+                        var prefix = '';
+                        if ( this.options.iconBaseClass ) {
+                            prefix += this.options.iconBaseClass + ' ';
+                        }
+                        if ( this.options.iconClassPrefix ) {
+                            prefix += this.options.iconClassPrefix;
+                        }
+                        this.input.val( prefix + this.iconpickerValue );
                     } else {
                         this.element.data('iconpickerValue', this.iconpickerValue);
                     }

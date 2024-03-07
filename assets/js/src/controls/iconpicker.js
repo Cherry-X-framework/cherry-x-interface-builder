@@ -39,18 +39,15 @@ const iconpicker = {
 	render: function( event ) {
 		var target = ( event._target ) ? event._target : $( 'body' ),
 			$picker = $( '.cx-ui-iconpicker:not([name*="__i__"])', target ),
-			$this,
-			set,
-			setData,
 			_this = this;
 
 		if ( $picker[0] ) {
 			this.getIconsSets();
 
 			$picker.each( function() {
-				$this   = $( this );
-				set     = $this.data( 'set' );
-				setData = _this.iconSets[set];
+				var $this   = $( this ),
+					set     = $this.data( 'set' ),
+					setData = _this.iconSets[set];
 
 				if ( $this.length && setData.icons ) {
 					$this.iconpicker({
@@ -59,7 +56,17 @@ const iconpicker = {
 						iconClassPrefix: setData.iconPrefix,
 						animation: false,
 						fullClassFormatter: function( val ) {
-							return setData.iconBase + ' ' + setData.iconPrefix + val;
+							var prefix = '';
+
+							if ( setData.iconBase ) {
+								prefix += setData.iconBase + ' ';
+							}
+
+							if ( setData.iconPrefix ) {
+								prefix += setData.iconPrefix;
+							}
+
+							return prefix + val;
 						}
 					}).on( 'iconpickerUpdated', function() {
 						$( this ).trigger( 'change' );
@@ -72,8 +79,27 @@ const iconpicker = {
 					});
 				}
 
-				if ( setData ) {
-					$( 'head' ).append( '<link rel="stylesheet" type="text/css" href="' + setData.iconCSS + '"">' );
+				var iconCSSID = set + '-css',
+					iconCSSExists = !! $( 'link#' + iconCSSID ).length;
+
+				if ( setData && setData.iconCSS && ! iconCSSExists ) {
+
+					if ( setData.iconDepends ) {
+
+						if ( ! Array.isArray( setData.iconDepends ) ) {
+							setData.iconDepends = [ setData.iconDepends ];
+						}
+
+						for ( var i = 0; i < setData.iconDepends.length; i++ ) {
+							var iconDependExists = !! $( 'link[href="' + setData.iconDepends[i] + '"]' ).length;
+
+							if ( ! iconDependExists ) {
+								$( 'head' ).append( '<link rel="stylesheet" href="' + setData.iconDepends[i] + '">' );
+							}
+						}
+					}
+
+					$( 'head' ).append( '<link rel="stylesheet" id="' + iconCSSID + '" href="' + setData.iconCSS + '">' );
 				}
 			} );
 		}

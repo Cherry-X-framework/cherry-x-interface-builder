@@ -91,20 +91,32 @@ const media = {
 						input_ids        = [],
 						new_img_object   = $( '.cx-all-images-wrap', settings.img_holder ),
 						new_img          = '',
-						fetchAttachments = [];
+						fetchAttachments = [],
+						fetchPromises    = [];
 
-					attachment.forEach( function( attachmentData, index ) {
-
-						if ( !attachmentData.url && attachmentData.id ) {
-							fetchAttachments.push(
-								wp.media.attachment( attachmentData.id ).fetch().then( function( data ) {
-									attachment[index] = data;
-								} )
-							);
-						}
+					fetchAttachments = attachment.filter( function( item ) {
+						return !item.url && item.id;
+					} ).map( function( item ) {
+						return item.id;
 					} );
 
-					Promise.all( fetchAttachments ).then( function() {
+					if ( fetchAttachments.length ) {
+						fetchPromises.push(
+							wp.media.query( {
+								post__in: fetchAttachments,
+								posts_per_page: -1,
+							} ).more().then( function() {
+								attachment = attachment.map( function( item ) {
+									if ( ! item.url ) {
+										item = wp.media.attachment( item.id ).attributes;
+									}
+									return item;
+								} );
+							} )
+						);
+					}
+
+					Promise.all( fetchPromises ).then( function() {
 						while ( attachment[count] ) {
 							var attachment_data = attachment[count],
 								attachment_id   = attachment_data.id,
