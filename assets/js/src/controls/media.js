@@ -148,7 +148,7 @@ const media = {
 										img_src = attachment_url;
 									}
 
-									thumb = '<img  src="' + img_src + '" alt="" data-img-attr="' + attachment_id + '">';
+									thumb = '<img  src="' + img_src + '" alt="' + attachment_data.alt + '" data-img-attr="' + attachment_id + '">';
 									thumb_type = 'image';
 									break;
 								case 'application/pdf':
