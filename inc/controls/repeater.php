@@ -326,6 +326,84 @@ if ( ! class_exists( 'CX_Control_Repeater' ) ) {
 
 		}
 
+		public function prepare_field_value( $field, $value ) {
+
+			$field_type = isset( $field['type'] ) ? $field['type'] : false;
+
+			switch ( $field_type ) {
+				case 'checkbox':
+
+					if ( ! empty( $field['options_callback'] ) ) {
+						$options = call_user_func( $field['options_callback'] );
+					}
+
+					if ( ! empty( $field['is_array'] ) && ! empty( $options ) && ! empty( $value ) ) {
+
+						$adjusted = array();
+
+						if ( ! is_array( $value ) ) {
+							$value = array( $value );
+						}
+
+						foreach ( $value as $val ) {
+							$adjusted[ $val ] = 'true';
+						}
+
+						foreach ( $options as $opt_val => $opt_label ) {
+							if ( ! in_array( $opt_val, $value ) ) {
+								$adjusted[ $opt_val ] = 'false';
+							}
+						}
+
+						$value = $adjusted;
+					}
+
+					break;
+				case 'text':
+
+					if ( ! empty( $value ) && $this->to_timestamp( $field ) && is_numeric( $value ) ) {
+
+						switch ( $field['input_type'] ) {
+							case 'date':
+								$value = $this->get_date( 'Y-m-d', $value );
+								break;
+
+							case 'datetime-local':
+								$value = $this->get_date( 'Y-m-d\TH:i', $value );
+								break;
+						}
+					}
+
+					break;
+
+			}
+
+			return $value;
+		}
+
+		public function get_date( $format, $time ) {
+			return apply_filters( 'jet-engine/repeater/date', date( $format, $time ), $time, $format );
+		}
+
+		public function to_timestamp( $field ) {
+
+			if ( empty( $field['input_type'] ) ) {
+				return false;
+			}
+
+			if ( empty( $field['is_timestamp'] ) ) {
+				return false;
+			}
+
+
+			if ( ! in_array( $field['input_type'], array( 'date', 'datetime-local' ) ) ) {
+				return false;
+			}
+
+			return ( true === $field['is_timestamp'] );
+
+		}
+
 		/**
 		 * Render single repeater field
 		 *
@@ -362,6 +440,8 @@ if ( ! class_exists( 'CX_Control_Repeater' ) ) {
 					if ( ! class_exists( $ui_class_name ) ) {
 						return '<p>Class <b>' . $ui_class_name . '</b> not exist!</p>';
 					}
+
+					$field['value'] = $this->prepare_field_value( $field, $field['value'] );
 
 					$ui_item = new $ui_class_name( $field );
 

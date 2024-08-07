@@ -157,7 +157,7 @@ const ConditionsManager = {
 
 		$.each( controls, function( control, args ) {
 
-			if ( 'repeater' === args.type && values.hasOwnProperty( control ) ) {
+			if ( 'repeater' === args.type && values.hasOwnProperty( control ) && Array.isArray( values[ control ] ) ) {
 
 				$.each( values[ control ], function( itemKey, itemValues ) {
 
