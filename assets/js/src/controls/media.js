@@ -142,6 +142,7 @@ const media = {
 								case 'image/gif':
 								case 'image/svg+xml':
 								case 'image/webp':
+								case 'image/avif':
 									if ( attachment_data.sizes !== undefined ) {
 										img_src = attachment_data.sizes.thumbnail ? attachment_data.sizes.thumbnail.url : attachment_data.sizes.full.url;
 									} else {

@@ -146,6 +146,7 @@ if ( ! class_exists( 'CX_Control_Media' ) ) {
 										case 'image/gif':
 										case 'image/svg+xml':
 										case 'image/webp':
+										case 'image/avif':
 											$img_src    = wp_get_attachment_image_src( $media_id, 'thumbnail' );
 											$img_src    = $img_src[0];
 											$img_alt    = get_post_meta( $media_id, '_wp_attachment_image_alt', true );
