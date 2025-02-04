@@ -134,6 +134,8 @@ if ( ! class_exists( 'CX_Control_Media' ) ) {
 											$media_url = wp_get_attachment_url( $media_id );
 									}
 
+									$media_id = apply_filters( 'cx-interface-builder/media/media_id', $media_id );
+
 									$media_ids[] = $media_id;
 									$media_title = get_the_title( $media_id );
 									$mime_type   = get_post_mime_type( $media_id );
